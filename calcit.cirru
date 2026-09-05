@@ -12,50 +12,56 @@
           :code $ quote
             defcomp comp-container (store)
               let
-                  states $ :states store
-                  cursor $ or (:cursor states) ([])
-                  state $ or (:data states)
-                    {} $ :content |
-                  log-plugin $ use-log (>> states :cont) (:content state)
-                [] (:effect log-plugin)
+                  states $ unsafe-coerce (read-field store :states) 'Map
+                  cursor $ or (read-field states :cursor) ([])
+                  state $ unsafe-coerce
+                    or (read-field states :data)
+                      {} $ :content |
+                    , 'Map
+                  log-plugin $ use-log (>> states :cont) (read-field state :content)
+                [] (read-field log-plugin :effect)
                   div
                     {} $ :style
-                      merge ui/global ui/column $ {} (:padding 8)
+                      merge (style-map ui/global) (style-map ui/column)
+                        style-map $ {} (:padding 8)
                     div ({})
                       input $ {}
-                        :value $ :content state
+                        :value $ read-field state :content
                         :placeholder |Content
                         :style $ merge ui/expand ui/input
                         :on-input $ fn (e d!)
-                          d! cursor $ assoc state :content (:value e)
+                          d! cursor $ assoc state :content (read-field e :value)
                       =< 8 nil
                       button $ {} (:style ui/button) (:inner-text |Run)
                         :on-click $ fn (e d!)
-                          println $ :content state
+                          println $ read-field state :content
                       =< 24 nil
-                      <> $ str "|Counter: " (:counter store)
+                      <> $ str "|Counter: " (read-field store :counter)
                       =< 8 nil
                       button $ {} (:style ui/button) (:inner-text "|Inc counter")
                         :on-click $ fn (e d!) (d! :inc nil)
                     =< nil 16
-                    memof-call comp-demo (>> states :a) |A 10
-                    memof-call comp-demo (>> states :a2) |A2 10
-                    memof-call comp-demo (>> states :a3) |A3 10
-                    memof-call comp-demo (>> states :a4) |A4 10
-                    memof-call comp-demo (>> states :a5) |A5 10
-                    :ui log-plugin
+                    memof1-call comp-demo (>> states :a) |A 10
+                    memof1-call comp-demo (>> states :a2) |A2 10
+                    memof1-call comp-demo (>> states :a3) |A3 10
+                    memof1-call comp-demo (>> states :a4) |A4 10
+                    memof1-call comp-demo (>> states :a5) |A5 10
+                    read-field log-plugin :ui
           :examples $ []
           :schema $ :: 'Dynamic
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-demo (states mark level)
               let
-                  cursor $ :cursor states
-                  state $ or (:data states)
-                    {} $ :draft |
-                  log-plugin $ memof-call use-log (>> states :demo) |DEMO
+                  states-map $ unsafe-coerce states 'Map
+                  cursor $ read-field states-map :cursor
+                  state $ unsafe-coerce
+                    or (read-field states-map :data)
+                      {} $ :draft |
+                    , 'Map
+                  log-plugin $ memof1-call use-log (>> states :demo) |DEMO
                 println |Called: mark
-                [] (:effect log-plugin)
+                [] (read-field log-plugin :effect)
                   div
                     {} $ :style
                       {}
@@ -65,7 +71,7 @@
                       :value $ &map:get state :draft
                       :style ui/input
                       :on-input $ fn (e d!)
-                        d! cursor $ assoc state :draft (-> e :event .-target .-value)
+                        d! cursor $ assoc state :draft (read-field e :value)
                     <> $ str "|This a demo: " mark
                     pre $ {}
                       :style $ {}
@@ -74,7 +80,7 @@
                       :inner-text $ .trim (format-cirru-edn state)
                     ; if (> level 10)
                       comp-demo (>> states level) (str |M- level) (dec level)
-                    :ui log-plugin
+                    read-field log-plugin :ui
           :examples $ []
           :schema $ :: 'Dynamic
         'effect-log $ %{} 'CodeEntry (:doc |)
@@ -82,21 +88,39 @@
             defeffect effect-log (mark) (action el at?) (js/console.log "|Effect happen:" mark action)
           :examples $ []
           :schema $ :: 'Dynamic
+        'read-field $ %{} 'CodeEntry (:doc "|Read an open Map or Struct field at the UI boundary.")
+          :code $ quote
+            defn read-field (value field)
+              if (struct? value) (&struct:get value field) (&map:get value field)
+          :examples $ []
+          :schema $ :: 'Fn
+            {} (:return 'Dynamic)
+              :args $ [] 'Dynamic 'Tag
+        'style-map $ %{} 'CodeEntry (:doc "|Normalize heterogeneous Respo style values.")
+          :code $ quote
+            defn style-map (value) (unsafe-coerce value 'Map)
+          :examples $ []
+          :schema $ :: 'Fn
+            {} (:return 'Map)
+              :args $ [] 'Dynamic
         'use-log $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn use-log (states mark)
               let
-                  cursor $ :cursor states
-                  state $ or (:data states)
-                    {} $ :draft |
+                  states-map $ unsafe-coerce states 'Map
+                  cursor $ read-field states-map :cursor
+                  state $ unsafe-coerce
+                    or (read-field states-map :data)
+                      {} $ :draft |
+                    , 'Map
                 {}
                   :ui $ div ({})
-                    <> $ str "|LOG ::: " mark "| :: " (:draft state)
+                    <> $ str "|LOG ::: " mark "| :: " (read-field state :draft)
                     input $ {}
-                      :value $ :draft state
+                      :value $ read-field state :draft
                       :style ui/input
                       :on-input $ fn (e d!)
-                        d! cursor $ assoc state :draft (-> e :event .-target .-value)
+                        d! cursor $ assoc state :draft (read-field e :value)
                   :effect $ effect-log mark
           :examples $ []
           :schema $ :: 'Dynamic
@@ -117,7 +141,7 @@
             respo.comp.space :refer $ =<
             app.config :refer $ dev?
             respo.util.format :refer $ hsl
-            memof.alias :refer $ memof-call
+            memof.once :refer $ memof1-call
     'app.config $ %{} 'FileEntry
       :defs $ {}
         'dev? $ %{} 'CodeEntry (:doc |)
@@ -203,7 +227,7 @@
           :code $ quote
             defn updater (store op data op-id op-time)
               case op
-                :states $ update-states store data
+                :states $ let[] (cursor s) data (update-states store cursor s)
                 :inc $ update store :counter inc
                 op store
           :examples $ []

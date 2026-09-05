@@ -9,36 +9,44 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4.2.2
+      with:
+        persist-credentials: false
 
-    - name: ACTIONS_ALLOW_UNSECURE_COMMANDS
-      id: ACTIONS_ALLOW_UNSECURE_COMMANDS
-      run: echo 'ACTIONS_ALLOW_UNSECURE_COMMANDS=true' >> $GITHUB_ENV
+    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v4.4.0
+      with:
+        node-version: 24
+        cache: yarn
 
-    - name: add cr
+    - name: Enable Yarn
+      run: corepack enable && corepack prepare yarn@4.12.0 --activate
+
+    - uses: calcit-lang/setup-calcit@704b3f5cd6f9ce3bd1e0c926dbdd1d181adb8180 # v0.2.0
+
+    - name: Install dependencies
       run: |
-        mkdir -p $GITHUB_WORKSPACE/bin
-        wget -O $GITHUB_WORKSPACE/bin/cr http://repo.calcit-lang.org/binaries/linux/cr
-        chmod +x $GITHUB_WORKSPACE/bin/cr
-        echo "::add-path::$GITHUB_WORKSPACE/bin"
+        caps --strict --ci
+        yarn install --immutable
+        caps verify --toolchain
 
-    - name: "prepare modules"
-      run: >
-        mkdir -p ~/.config/calcit/modules/ && cd ~/.config/calcit/modules/
-        && git clone https://github.com/calcit-lang/lilac.git
-        && git clone https://github.com/calcit-lang/memof.git
-        && git clone https://github.com/Respo/respo.calcit.git
-        && git clone https://github.com/Respo/respo-ui.calcit.git
+    - name: Check Calcit sources
+      run: |
+        calcit edit format
+        git diff --exit-code -- calcit.cirru
+        calcit --check-only
+        calcit analyze dynamic-methods --summary-only --max 0
+        calcit analyze deprecated
 
     - name: "compiles to js"
-      run: >
-        cr --emit-js --once
-        && yarn && yarn vite build --base=./
+      run: yarn compile && yarn release
 
     - name: Deploy to server
       id: deploy
-      uses: Pendect/action-rsyncer@v1.1.0
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: Pendect/action-rsyncer@v2.0.0
       env:
         DEPLOY_KEY: ${{secrets.rsync_private_key}}
       with:
@@ -49,4 +57,5 @@ jobs:
         dest: 'rsync-user@tiye.me:/web-assets/repo/${{ github.repository }}'
 
     - name: Display status from deploy
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: echo "${{ steps.deploy.outputs.status }}"

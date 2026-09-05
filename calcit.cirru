@@ -80,7 +80,7 @@
                             value $ :value e
                           when (string? value)
                             d! cursor $ assoc state :draft value
-                    <> $ str "|This a demo: " mark
+                    <> $ str "|This is a demo: " mark
                     pre $ {}
                       :style $ {}
                         :background $ hsl 0 0 95

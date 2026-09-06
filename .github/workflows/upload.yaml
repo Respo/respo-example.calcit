@@ -17,7 +17,7 @@ jobs:
       with:
         persist-credentials: false
 
-    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.1.0
+    - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
       with:
         node-version: 24
 
@@ -51,10 +51,10 @@ jobs:
         set -euo pipefail
         curl --fail --location --silent --show-error \
           --output "$RUNNER_TEMP/rsync.tar.gz" \
-          https://download.samba.org/pub/rsync/src/rsync-3.4.4.tar.gz
-        echo "bd88cf82fa653da32314fb229136407c5c90f80d1758d8f4b091767877d8fa96  $RUNNER_TEMP/rsync.tar.gz" | sha256sum --check --strict
+          https://download.samba.org/pub/rsync/src/rsync-3.5.0.tar.gz
+        echo "c7ffd1ef653e99540f661e47cb00b7f9cad1ee6b972399b16f93d672656e0d33  $RUNNER_TEMP/rsync.tar.gz" | sha256sum --check --strict
         tar -xzf "$RUNNER_TEMP/rsync.tar.gz" -C "$RUNNER_TEMP"
-        cd "$RUNNER_TEMP/rsync-3.4.4"
+        cd "$RUNNER_TEMP/rsync-3.5.0"
         ./configure \
           --prefix="$RUNNER_TEMP/rsync-install" \
           --disable-acl-support \

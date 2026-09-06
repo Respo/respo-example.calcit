@@ -11,7 +11,7 @@ caps --strict --ci
 yarn install --immutable
 calcit calcit.cirru --watch # compile on changes
 
-yarn vite # watching and running on localhost:3000
+yarn vite # watching and running on localhost:5173
 ```
 
 Use Calcit 0.13.77, caps 0.1.0, Node 24 and Yarn 4.12.0.

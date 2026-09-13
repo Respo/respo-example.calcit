@@ -14,7 +14,7 @@ calcit calcit.cirru --watch # compile on changes
 yarn vite # watching and running on localhost:5173
 ```
 
-Use Calcit 0.13.77, caps 0.1.0, Node 24 and Yarn 4.12.0.
+Use Calcit 0.14.16, caps 0.1.0, Node 24 and Yarn 4.12.0.
 `calcit.cirru` is the single canonical source snapshot.
 
 Validation:

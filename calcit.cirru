@@ -3,8 +3,7 @@
   :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
   :package |app
   :entries $ {} $ :default
-    {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js)
-      :reload-fn 'app.main/reload!
+    {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/
       :type-slots $ {}
@@ -14,7 +13,7 @@
         'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-container (store)
             let
-                states $ option:unwrap $ get store :states
+                states $ :states store
                 cursor $ option:unwrap-or (get states :cursor) ([])
                 state $ option:unwrap-or (get states :data)
                   {} $ :content |
@@ -42,7 +41,7 @@
                       :on-click $ fn (e d!)
                         println $ option:unwrap $ get state :content
                     =< 24 nil
-                    <> $ str "|Counter: " $ option:unwrap (get store :counter)
+                    <> $ str "|Counter: " $ :counter store
                     =< 8 nil
                     button $ {} (:style ui/button) (:inner-text "|Inc counter")
                       :on-click $ fn (e d!) (d! :inc nil)
@@ -54,7 +53,8 @@
                   memof1-call-by :a5 comp-demo (>> states :a5) |A5 10
                   option:unwrap $ get log-plugin :ui
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] 'app.schema/Store
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-demo (states mark level)
             let
@@ -84,16 +84,19 @@
                     :style $ {}
                       :background $ hsl 0 0 95
                       :padding "|4px 8px"
-                    :inner-text $ .trim $ format-cirru-edn state
+                    :inner-text $ trim $ format-cirru-edn state
                   ; if (> level 10)
                     comp-demo (>> states level) (str |M- level) (dec level)
                   option:unwrap $ get log-plugin :ui
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] (:: 'Map 'Tag 'Dynamic) 'String 'Number
         'effect-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defeffect effect-log (mark) (action el at?) (js/console.log "|Effect happen:" mark action)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'String
+            :features $ #{} :js-ffi
         'use-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-log (states mark)
             let
@@ -115,7 +118,9 @@
                           d! cursor $ assoc state :draft value
                 :effect $ effect-log mark
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {}
+            :args $ [] (:: 'Map 'Tag 'Dynamic) 'String
+            :return $ :: 'Map 'Tag 'Dynamic
         'use-plugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-plugin (mark)
             div
@@ -123,7 +128,8 @@
                 :border $ str "|1px solid " $ hsl 0 0 93
               <> $ str "|log ::: " mark
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require (respo-ui.core :as ui)
@@ -137,12 +143,12 @@
         'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def dev? true
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Bool
         'site $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def site
             {} $ :storage-key |workflow
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Map 'Tag 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.config
     'app.main $ %{} 'FileEntry
@@ -150,41 +156,46 @@
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defatom *store schema/store
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Ref 'app.schema/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ [] 'Dynamic
         'main! $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn main! ()
-            load-console-formatter!
+          :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
             render-app!
             add-watch *store :changes $ fn (store prev) (render-app!)
             println "|App started."
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
+            :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def mount-target (.querySelector js/document |.app)
+          :code $ quote $ defn mount-target () (.querySelector js/document |.app)
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
+            :features $ #{} :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn reload! () (clear-cache!) (remove-watch *store :changes)
-            reset-memof1-caches!
+          :code $ quote $ defn reload! () (clear-cache!) (remove-watch *store :changes) (reset-memof1-caches!)
             add-watch *store :changes $ fn (store prev) (render-app!)
             render-app!
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
-            render! mount-target
+            render! (mount-target)
               w-js-log $ comp-container @*store
               , dispatch!
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
@@ -195,14 +206,20 @@
             app.config :as config
             memof.once :refer $ reset-memof1-caches!
     'app.schema $ %{} 'FileEntry
-      :defs $ {} $ 'store
-        %{} 'CodeEntry (:doc |)
-          :code $ quote $ def store
-            {}
-              :states $ {} $ :cursor ([])
-              :counter 0
+      :defs $ {}
+        'Store $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct Store
+            :states $ :: 'Map 'Tag 'Dynamic
+            :counter 'Number
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'StructDef
+        'store $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ def store
+            Store :states
+              {} $ :cursor $ []
+              , :counter 0
+          :examples $ []
+          :schema $ :: 'app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
@@ -214,7 +231,8 @@
               (:inc _) (update store :counter inc)
               _ store
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
+            :args $ [] 'app.schema/Store 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require $ respo.cursor :refer $ update-states

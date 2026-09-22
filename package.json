@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "@calcit/procs": "0.15.2"
+    "@calcit/procs": "0.18.1"
   },
   "devDependencies": {
     "vite": "^8.0.16"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "yarn@4.12.0",
   "scripts": {
     "build": "calcit calcit.cirru && vite build --base=./",

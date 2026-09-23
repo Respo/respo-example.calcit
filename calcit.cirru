@@ -5,7 +5,7 @@
   :entries $ {} $ :default
     {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!)
       :feature-policy $ {}
-      :modules $ [] |respo.calcit/ |memof/ |respo-ui.calcit/
+      :modules $ [] |respo.calcit/ |respo-ui.calcit/
       :type-slots $ {}
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
@@ -46,11 +46,11 @@
                     button $ {} (:style ui/button) (:inner-text "|Inc counter")
                       :on-click $ fn (e d!) (d! :inc nil)
                   =< nil 16
-                  memof1-call-by :a comp-demo (>> states :a) |A 10
-                  memof1-call-by :a2 comp-demo (>> states :a2) |A2 10
-                  memof1-call-by :a3 comp-demo (>> states :a3) |A3 10
-                  memof1-call-by :a4 comp-demo (>> states :a4) |A4 10
-                  memof1-call-by :a5 comp-demo (>> states :a5) |A5 10
+                  memo-comp-by :a comp-demo (>> states :a) |A 10
+                  memo-comp-by :a2 comp-demo (>> states :a2) |A2 10
+                  memo-comp-by :a3 comp-demo (>> states :a3) |A3 10
+                  memo-comp-by :a4 comp-demo (>> states :a4) |A4 10
+                  memo-comp-by :a5 comp-demo (>> states :a5) |A5 10
                   option:unwrap $ get log-plugin :ui
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
@@ -61,7 +61,7 @@
                 cursor $ option:unwrap $ get states :cursor
                 state $ option:unwrap-or (get states :data)
                   {} $ :draft |
-                log-plugin $ memof1-call-by cursor use-log (>> states :demo) |DEMO
+                log-plugin $ memo-value-by cursor use-log (>> states :demo) |DEMO
               println |Called: mark
               []
                 option:unwrap $ get log-plugin :effect
@@ -133,11 +133,10 @@
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require (respo-ui.core :as ui)
-            respo.core :refer $ defcomp defeffect <> >> div button textarea span input pre
+            respo.core :refer $ defcomp defeffect <> >> div button textarea span input pre memo-comp-by memo-value-by
             respo.comp.space :refer $ =<
             app.config :refer $ dev?
             respo.util.format :refer $ hsl
-            memof.once :refer $ memof1-call-by
     'app.config $ %{} 'FileEntry
       :defs $ {}
         'dev? $ %{} 'CodeEntry (:doc |)
@@ -182,7 +181,7 @@
             :args $ []
             :features $ #{} :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn reload! () (clear-cache!) (remove-watch *store :changes) (reset-memof1-caches!)
+          :code $ quote $ defn reload! () (clear-cache!) (remove-watch *store :changes)
             add-watch *store :changes $ fn (store prev) (render-app!)
             render-app!
           :examples $ []
@@ -204,7 +203,6 @@
             app.updater :refer $ updater
             app.schema :as schema
             app.config :as config
-            memof.once :refer $ reset-memof1-caches!
     'app.schema $ %{} 'FileEntry
       :defs $ {}
         'Store $ %{} 'CodeEntry (:doc |)

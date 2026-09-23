@@ -4,7 +4,7 @@ import * as c from '../js-out/calcit.core.mjs';
 import { updater } from '../js-out/app.updater.mjs';
 import { store } from '../js-out/app.schema.mjs';
 import { comp_container } from '../js-out/app.comp.container.mjs';
-import { reset_memof1_caches_$x_ } from '../js-out/memof.once.mjs';
+import { clear_cache_$x_ } from '../js-out/respo.core.mjs';
 
 const tags = c.init_tags(['counter', 'states', 'a', 'data', 'draft']);
 const read = (value, key) => c.option_$o_unwrap(c.get(value, key));
@@ -25,7 +25,7 @@ test('cursor dispatch updates the intended local state and preserves counter', (
 });
 
 test('memo keys keep five demos distinct and reuse unchanged demos', () => {
-  reset_memof1_caches_$x_();
+  clear_cache_$x_();
   const logs = [];
   const original = console.log;
   console.log = (...args) => logs.push(args.join(' '));
@@ -39,7 +39,7 @@ test('memo keys keep five demos distinct and reuse unchanged demos', () => {
     assert.deepEqual(logs.filter(line => line.startsWith('Called:')), ['Called: A']);
   } finally {
     console.log = original;
-    reset_memof1_caches_$x_();
+    clear_cache_$x_();
   }
 });
 

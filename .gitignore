@@ -7,3 +7,5 @@ node_modules/
 .calcit/
 .yarn/*.gz
 dist/
+.pnp.cjs
+.pnp.loader.mjs

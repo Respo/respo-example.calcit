@@ -5,7 +5,7 @@
   :entries $ {} $ :default
     {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!)
       :feature-policy $ {}
-      :modules $ [] |respo.calcit/ |respo-ui.calcit/
+      :modules $ [] |respo.calcit/ |respo-ui.calcit/ |js-ffi/
       :type-slots $ {}
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
@@ -92,11 +92,15 @@
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
             :args $ [] (:: 'Map 'Tag 'Dynamic) 'String 'Number
         'effect-log $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defeffect effect-log (mark) (action el at?) (js/console.log "|Effect happen:" mark action)
+          :code $ quote $ defeffect effect-log (mark) (action el at?)
+            js-ffi.browser/console-log! $ str-spaced "|Effect happen:" mark action
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Effect)
             :args $ [] 'String
             :features $ #{} :js-ffi
+          :tests $ [] $ %{} 'TestEntry (:name |constructs-typed-effect)
+            :code $ quote $ assert= :effect-log
+              :name $ effect-log |demo
         'use-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-log (states mark)
             let
@@ -175,9 +179,12 @@
             :args $ []
             :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn mount-target () (.querySelector js/document |.app)
+          :code $ quote $ defn mount-target ()
+            match (js-ffi.browser/query-selector |.app)
+              (:none) (raise "|Missing .app mount target")
+              (:some host) (respo.ffi.browser/narrow-element host)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'respo.dom/DomElement)
             :args $ []
             :features $ #{} :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)

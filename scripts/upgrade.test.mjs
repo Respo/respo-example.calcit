@@ -3,7 +3,10 @@ import test from 'node:test';
 import * as c from '../js-out/calcit.core.mjs';
 import { updater } from '../js-out/app.updater.mjs';
 import { store } from '../js-out/app.schema.mjs';
+import { Effect } from '../js-out/respo.schema.mjs';
 import { comp_container } from '../js-out/app.comp.container.mjs';
+import { effect_log } from '../js-out/app.comp.container.mjs';
+import { mount_target } from '../js-out/app.main.mjs';
 import { clear_cache_$x_ } from '../js-out/respo.core.mjs';
 
 const tags = c.init_tags(['counter', 'states', 'a', 'data', 'draft']);
@@ -45,4 +48,40 @@ test('memo keys keep five demos distinct and reuse unchanged demos', () => {
 
 test('unknown operations preserve the store', () => {
   assert.equal(apply(store, ':: :unknown'), store);
+});
+
+test('typed js-ffi mount lookup returns the host element and reports a missing mount', () => {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'document');
+  const host = {};
+  try {
+    globalThis.document = {
+      querySelector(selector) {
+        assert.equal(selector, '.app');
+        return host;
+      },
+    };
+    assert.equal(mount_target(), host);
+    globalThis.document.querySelector = () => null;
+    assert.throws(() => mount_target(), /Missing \.app mount target/);
+  } finally {
+    if (previous) Object.defineProperty(globalThis, 'document', previous);
+    else Reflect.deleteProperty(globalThis, 'document');
+  }
+});
+
+test('effect logging crosses the typed console boundary', () => {
+  const tags = c.init_tags(['args', 'method', 'mount']);
+  const effect = effect_log('demo');
+  const logs = [];
+  const original = console.log;
+  console.log = (message) => logs.push(message);
+  try {
+    effect.nthAt(Effect.fields.indexOf(tags.method), tags.method)(
+      effect.nthAt(Effect.fields.indexOf(tags.args), tags.args),
+      c._$L_(tags.mount, null, false),
+    );
+  } finally {
+    console.log = original;
+  }
+  assert.deepEqual(logs, ['Effect happen: demo :mount']);
 });

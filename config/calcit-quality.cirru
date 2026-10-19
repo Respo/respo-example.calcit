@@ -22,10 +22,10 @@
       :codeNil 0
       :declaredOptional 0
       :deprecatedCalls 0
-      :schemaDynamic 2
+      :schemaDynamic 1
       :typeNone 0
       :typeNotFull 1
-      :unresolved 2
+      :unresolved 1
       :unsafeCoerce 0
     |app.main/dispatch! $ {} (:codeDynamic 0)
       :codeNil 0
@@ -49,10 +49,10 @@
     :codeNil 5
     :declaredOptional 0
     :deprecatedCalls 0
-    :schemaDynamic 5
+    :schemaDynamic 4
     :typeNone 0
     :typeNotFull 4
-    :unresolved 10
+    :unresolved 9
     :unsafeCoerce 0
   :scope $ {} (:includeDependencies false)
     :namespace nil

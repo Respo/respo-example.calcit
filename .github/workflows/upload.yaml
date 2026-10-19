@@ -36,17 +36,15 @@ jobs:
         tools: calcit,caps
         caps-version: "0.1.1"
 
-    # Current Respo UI/router manifests still request preceding compatible
-    # alpha releases, so strict Caps resolution rejects the highest SemVer set.
     - name: Install and validate
       run: |
-        caps --ci
+        caps --strict --ci
         yarn install --immutable
         caps verify --toolchain
         calcit calcit.cirru edit format
         git diff --exit-code -- calcit.cirru
         calcit calcit.cirru fix --workflow strict --verify --format edn
-        calcit calcit.cirru --check-only
+        calcit calcit.cirru --check-only --all-defs
         calcit calcit.cirru test --require-match --summary-only --format json
         calcit calcit.cirru analyze deprecated --summary-only --format json
         calcit calcit.cirru analyze dynamic-methods --summary-only --format json

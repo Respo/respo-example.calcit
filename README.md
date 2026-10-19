@@ -17,7 +17,8 @@ yarn vite # serve at localhost:5173
 ```
 
 模块使用正式版本 Respo 0.16.122、Respo UI 0.7.41 和 js-ffi 0.2.3。
-CI 独立执行 strict Caps 解析；本地不运行 Caps。
+CI 独立执行 strict Caps 解析。本次本地验收未运行 Caps；
+本地开发仍须执行上述安装步骤，生成所需的模块链接。
 挂载节点由类型化的
 `js-ffi.browser/query-selector` 查询，缺失时明确报错；effect 日志使用
 `js-ffi.browser/console-log!`，不直接访问 `js/document` 或 `js/console`。

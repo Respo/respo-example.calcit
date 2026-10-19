@@ -14,13 +14,17 @@
           :code $ quote $ defcomp comp-container (store)
             let
                 states $ :states store
-                cursor $ option:unwrap-or (get states :cursor) ([])
-                state $ option:unwrap-or (get states :data)
-                  {} $ :content |
-                log-plugin $ use-log (>> states :cont)
+                cursor $ decode-map-as
+                  option:unwrap-or (get states :cursor) ([])
+                  :: 'List 'Dynamic
+                state $ decode-map-as
+                  option:unwrap-or (get states :data)
+                    {} $ :content |
+                  :: 'Map 'Tag 'String
+                log-plugin $ use-log
+                  decode-map-as (>> states :cont) (:: 'Map 'Tag 'Dynamic)
                   option:unwrap $ get state :content
-              []
-                option:unwrap $ get log-plugin :effect
+              [] (:effect log-plugin)
                 div
                   {} $ :style $ merge ui/global ui/column
                     {} $ :padding |8px
@@ -30,12 +34,13 @@
                       :placeholder |Content
                       :style $ merge ui/expand ui/input
                       :on-input $ fn (e d!)
-                        hint-fn $ {} (:return 'Dynamic)
-                          :args $ [] 'respo.schema/RespoEvent 'Dynamic
+                        hint-fn $ {} (:return 'Unit)
+                          :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
                         let
-                            value $ :value e
+                            value $ .unwrap $ get e :value
                           when (string? value)
-                            d! cursor $ assoc state :content value
+                            d! $ :: :states cursor $ assoc state :content value
+                        , &unit
                     =< 8 nil
                     button $ {} (:style ui/button) (:inner-text |Run)
                       :on-click $ fn (e d!)
@@ -44,27 +49,48 @@
                     <> $ str "|Counter: " $ :counter store
                     =< 8 nil
                     button $ {} (:style ui/button) (:inner-text "|Inc counter")
-                      :on-click $ fn (e d!) (d! :inc nil)
+                      :on-click $ fn (e d!)
+                        d! $ :: :inc nil
                   =< nil 16
-                  memo-comp-by :a comp-demo (>> states :a) |A 10
-                  memo-comp-by :a2 comp-demo (>> states :a2) |A2 10
-                  memo-comp-by :a3 comp-demo (>> states :a3) |A3 10
-                  memo-comp-by :a4 comp-demo (>> states :a4) |A4 10
-                  memo-comp-by :a5 comp-demo (>> states :a5) |A5 10
-                  option:unwrap $ get log-plugin :ui
+                  memo-comp-by :a comp-demo
+                    decode-map-as (>> states :a) (:: 'Map 'Tag 'Dynamic)
+                    , |A 10
+                  memo-comp-by :a2 comp-demo
+                    decode-map-as (>> states :a2) (:: 'Map 'Tag 'Dynamic)
+                    , |A2 10
+                  memo-comp-by :a3 comp-demo
+                    decode-map-as (>> states :a3) (:: 'Map 'Tag 'Dynamic)
+                    , |A3 10
+                  memo-comp-by :a4 comp-demo
+                    decode-map-as (>> states :a4) (:: 'Map 'Tag 'Dynamic)
+                    , |A4 10
+                  memo-comp-by :a5 comp-demo
+                    decode-map-as (>> states :a5) (:: 'Map 'Tag 'Dynamic)
+                    , |A5 10
+                  :ui log-plugin
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
             :args $ [] 'app.schema/Store
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-demo (states mark level)
             let
-                cursor $ option:unwrap $ get states :cursor
-                state $ option:unwrap-or (get states :data)
-                  {} $ :draft |
-                log-plugin $ memo-value-by cursor use-log (>> states :demo) |DEMO
+                cursor $ decode-map-as
+                  option:unwrap $ get states :cursor
+                  :: 'List 'Dynamic
+                state $ decode-map-as
+                  option:unwrap-or (get states :data)
+                    {} $ :draft |
+                  :: 'Map 'Tag 'String
+                log-plugin $ let
+                    cached-plugin $ memo-value-by cursor use-log
+                      decode-map-as (>> states :demo) (:: 'Map 'Tag 'Dynamic)
+                      , |DEMO
+                  if (struct? cached-plugin)
+                    struct-match cached-plugin (LogPlugin plugin plugin)
+                      _ invalid $ raise |Expected-LogPlugin
+                    raise |Expected-LogPlugin
               println |Called: mark
-              []
-                option:unwrap $ get log-plugin :effect
+              [] (:effect log-plugin)
                 div
                   {} $ :style $ {}
                     :border $ str "|1px solid " $ hsl 0 0 90
@@ -73,12 +99,13 @@
                     :value $ option:unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ {} (:return 'Dynamic)
-                        :args $ [] 'respo.schema/RespoEvent 'Dynamic
+                      hint-fn $ {} (:return 'Unit)
+                        :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
                       let
-                          value $ :value e
+                          value $ .unwrap $ get e :value
                         when (string? value)
-                          d! cursor $ assoc state :draft value
+                          d! $ :: :states cursor $ assoc state :draft value
+                      , &unit
                   <> $ str "|This is a demo: " mark
                   pre $ {}
                     :style $ {}
@@ -86,8 +113,11 @@
                       :padding "|4px 8px"
                     :inner-text $ trim $ format-cirru-edn state
                   ; if (> level 10)
-                    comp-demo (>> states level) (str |M- level) (dec level)
-                  option:unwrap $ get log-plugin :ui
+                    comp-demo
+                      decode-map-as (>> states level) (:: 'Map 'Tag 'Dynamic)
+                      str |M- level
+                      dec level
+                  :ui log-plugin
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
             :args $ [] (:: 'Map 'Tag 'Dynamic) 'String 'Number
@@ -104,27 +134,31 @@
         'use-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-log (states mark)
             let
-                cursor $ option:unwrap $ get states :cursor
-                state $ option:unwrap-or (get states :data)
-                  {} $ :draft |
-              {}
-                :ui $ div ({})
+                cursor $ decode-map-as
+                  option:unwrap $ get states :cursor
+                  :: 'List 'Dynamic
+                state $ decode-map-as
+                  option:unwrap-or (get states :data)
+                    {} $ :draft |
+                  :: 'Map 'Tag 'String
+              LogPlugin :ui
+                div ({})
                   <> $ str "|LOG ::: " mark "| :: " $ option:unwrap (get state :draft)
                   input $ {}
                     :value $ option:unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ {} (:return 'Dynamic)
-                        :args $ [] 'respo.schema/RespoEvent 'Dynamic
+                      hint-fn $ {} (:return 'Unit)
+                        :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
                       let
-                          value $ :value e
+                          value $ .unwrap $ get e :value
                         when (string? value)
-                          d! cursor $ assoc state :draft value
-                :effect $ effect-log mark
+                          d! $ :: :states cursor $ assoc state :draft value
+                      , &unit
+                , :effect $ effect-log mark
           :examples $ []
-          :schema $ :: 'Fn $ {}
+          :schema $ :: 'Fn $ {} (:return 'app.schema/LogPlugin)
             :args $ [] (:: 'Map 'Tag 'Dynamic) 'String
-            :return $ :: 'Map 'Tag 'Dynamic
         'use-plugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-plugin (mark)
             div
@@ -132,7 +166,7 @@
                 :border $ str "|1px solid " $ hsl 0 0 93
               <> $ str "|log ::: " mark
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Element)
             :args $ [] 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
@@ -141,6 +175,7 @@
             respo.comp.space :refer $ =<
             app.config :refer $ dev?
             respo.util.format :refer $ hsl
+            app.schema :refer $ LogPlugin
     'app.config $ %{} 'FileEntry
       :defs $ {}
         'dev? $ %{} 'CodeEntry (:doc |)
@@ -157,7 +192,7 @@
     'app.main $ %{} 'FileEntry
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *store schema/store
+          :code $ quote $ defref *store schema/store
           :examples $ []
           :schema $ :: 'Ref 'app.schema/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
@@ -172,7 +207,7 @@
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
             render-app!
-            add-watch *store :changes $ fn (store prev) (render-app!)
+            add-watch! *store :changes $ fn (store prev) (render-app!)
             println "|App started."
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
@@ -188,16 +223,16 @@
             :args $ []
             :features $ #{} :js-ffi
         'reload! $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn reload! () (clear-cache!) (remove-watch *store :changes)
-            add-watch *store :changes $ fn (store prev) (render-app!)
+          :code $ quote $ defn reload! () (clear-cache!) (remove-watch! *store :changes)
+            add-watch! *store :changes $ fn (store prev) (render-app!)
             render-app!
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
-            render! (mount-target)
-              w-js-log $ comp-container @*store
+            render-with! (mount-target)
+              fn () $ dbg $ comp-container @*store
               , dispatch!
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
@@ -205,13 +240,17 @@
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
-            respo.core :refer $ render! clear-cache!
+            respo.core :refer $ render-with! clear-cache!
             app.comp.container :refer $ comp-container
             app.updater :refer $ updater
             app.schema :as schema
             app.config :as config
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'LogPlugin $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct LogPlugin (:ui 'respo.schema/Element) (:effect 'respo.schema/Effect)
+          :examples $ []
+          :schema $ :: 'StructDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
             :states $ :: 'Map 'Tag 'Dynamic
@@ -231,13 +270,21 @@
       :defs $ {} $ 'updater
         %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op)
-            match op
-              (:states cursor data) (update-states store cursor data)
-              (:inc _) (update store :counter inc)
-              _ store
+            if (enum? op)
+              match op
+                (:states cursor data)
+                  assoc store :states $ decode-map-as
+                    update-state-tree (:states store)
+                      decode-map-as cursor $ :: 'List 'Dynamic
+                      , data
+                    :: 'Map 'Tag 'Dynamic
+                (:inc _)
+                  assoc store :counter $ inc $ :counter store
+                _ store
+              , store
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
             :args $ [] 'app.schema/Store 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
-          :require $ respo.cursor :refer $ update-states
+          :require $ respo.cursor :refer $ update-state-tree

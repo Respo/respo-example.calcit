@@ -2,10 +2,18 @@
 Respo Calcit Example
 ----
 
+### 使用者影响：正式 Calcit 0.30.1 配对
+
+CLI/procs一起升级到正式 **0.30.1**，模块同步正式Respo0.16.124、UI0.8.0、JS-FFI0.2.5，
+传递Router0.8.37。请重新安装完整依赖图、生成JS并刷新，不混用旧alpha缓存。
+本次不改Snapshot、输入与计数行为、keyed memo合同、effect或页面布局，不新增存储或功能。
+CI保留all-defs、完整strict、原质量/业务门禁，退役两个旧analyze别名，不增加脚本或预算。
+不合并或部署生产、不发布tag/npm，原COS/CDN和服务器路径保持不变。
+
 ### 开发
 
-当前验收使用配对的 Calcit / procs 0.30.1-alpha.5、caps 0.1.1、Node 24 和 Yarn 4.18.0。
-这是候选工具链验收，不代表已通过正式 0.30.1 二进制验收。
+当前使用配对的正式Calcit/procs0.30.1、caps0.1.1、Node24和Yarn4.18.0。
+正式CLI/运行验收以本次PR为准，之前alpha.5结果不作为新证明。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
 ```bash
@@ -16,7 +24,7 @@ calcit calcit.cirru --watch # compile on changes
 yarn vite # serve at localhost:5173
 ```
 
-模块使用正式版本 Respo 0.16.122、Respo UI 0.7.41 和 js-ffi 0.2.3。
+模块使用本文开头的完整正式版本图。
 CI 独立执行 strict Caps 解析。本次本地验收未运行 Caps；
 本地开发仍须执行上述安装步骤，生成所需的模块链接。
 挂载节点由类型化的
@@ -51,7 +59,7 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 每个 PR 独立排队，与生产队列分开，不取消正在上传的任务。
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
-模块依赖没有新增 alpha/hash 版本，工具链候选例外如上。
+模块与工具链均固定正式版本，不新增alpha/hash引用。
 质量基线仅收紧 schemaDynamic 5→4、unresolved 10→9，unsafe/deprecated 仍为 0。
 原有五处排版占位 nil 与真实异构状态边界保留，不把它们伪装成具体类型。
 本 PR 不授权合并或生产部署。

@@ -16,7 +16,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -35,6 +36,7 @@ jobs:
       with:
         tools: calcit,caps
         caps-version: "0.1.1"
+        deps-file: deps.cirru
 
     - name: Install and validate
       run: |
@@ -42,8 +44,9 @@ jobs:
         caps --strict --ci
         yarn install --immutable
         caps verify --toolchain
+        git diff --quiet -- deps.cirru package.json yarn.lock .yarnrc.yml
         calcit calcit.cirru edit format
-        git diff --exit-code -- calcit.cirru
+        git diff --quiet -- calcit.cirru
         calcit calcit.cirru fix --workflow strict --verify --format edn
         calcit calcit.cirru --check-only --all-defs
         calcit calcit.cirru test --require-match --summary-only --format json
@@ -72,6 +75,7 @@ jobs:
         node --test scripts/upgrade.test.mjs
 
     - name: Upload static assets to COS
+      timeout-minutes: 10
       if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
       uses: worktools/cos-upload-action@06d6027dcca6413c5936e04a9b6e9f0d5ef71ba0 # v1.2.0
       with:

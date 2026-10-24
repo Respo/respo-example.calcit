@@ -69,8 +69,13 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 
 `yarn dev` 先编译一次再启动Vite，实时源码编译仍另开原watch命令，不引入concurrently。
 临时迁移事务只在官方Linux 0.30.1 CI生成Snapshot，本地仅只读query并核验成功产物，
-不运行本地Caps或编译器检查/build/codegen/mutation。实际页面与原memo/effect测试需分别验收，
-不凭版本声明或类型计数声称全部行为已验证。
+不运行本地Caps或编译器检查/build/codegen/mutation。
+官方Linux 0.30.1事务CI已通过改写前后原附着测试1项、Node回归7项、all-defs167项，
+改写后完整strict通过，原质量预算零增量；仍有4处真实开放类型边界，不声称Dynamic清零。
+同一CI静态产物在全新localhost实际验收计数0→1→2、顶部/A/A2/插件输入、Run输出、
+五实例memo隔离，以及effect mount/before-update/update日志；计数变化不重算五个memo，
+A/A2输入只重算对应实例。刷新回计数0和空输入，控制台无warning/error。
+未测试HMR、所有effect卸载路径或移动端，不凭版本声明或类型计数声称全部行为已验证。
 
 ### 许可证
 

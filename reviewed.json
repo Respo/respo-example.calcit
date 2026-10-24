@@ -1,0 +1,2104 @@
+{
+  "namespaces": [
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 2,
+        "doc": "",
+        "namespace": "app.$meta",
+        "ns_code": [
+          "ns",
+          "app.$meta"
+        ]
+      },
+      "schema_version": 1
+    },
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 5,
+        "doc": "",
+        "namespace": "app.comp.container",
+        "ns_code": [
+          "ns",
+          "app.comp.container",
+          [
+            ":require",
+            [
+              "respo-ui.core",
+              ":as",
+              "ui"
+            ],
+            [
+              "respo.core",
+              ":refer",
+              [
+                "defcomp",
+                "defeffect",
+                "<>",
+                ">>",
+                "div",
+                "button",
+                "textarea",
+                "span",
+                "input",
+                "pre",
+                "memo-comp-by",
+                "memo-value-by"
+              ]
+            ],
+            [
+              "respo.comp.space",
+              ":refer",
+              [
+                "=<"
+              ]
+            ],
+            [
+              "app.config",
+              ":refer",
+              [
+                "dev?"
+              ]
+            ],
+            [
+              "respo.util.format",
+              ":refer",
+              [
+                "hsl"
+              ]
+            ],
+            [
+              "app.schema",
+              ":refer",
+              [
+                "LogPlugin"
+              ]
+            ]
+          ]
+        ]
+      },
+      "schema_version": 1
+    },
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 2,
+        "doc": "",
+        "namespace": "app.config",
+        "ns_code": [
+          "ns",
+          "app.config"
+        ]
+      },
+      "schema_version": 1
+    },
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 6,
+        "doc": "",
+        "namespace": "app.main",
+        "ns_code": [
+          "ns",
+          "app.main",
+          [
+            ":require",
+            [
+              "respo.core",
+              ":refer",
+              [
+                "render-with!",
+                "clear-cache!"
+              ]
+            ],
+            [
+              "app.comp.container",
+              ":refer",
+              [
+                "comp-container"
+              ]
+            ],
+            [
+              "app.updater",
+              ":refer",
+              [
+                "updater"
+              ]
+            ],
+            [
+              "app.schema",
+              ":as",
+              "schema"
+            ],
+            [
+              "app.config",
+              ":as",
+              "config"
+            ]
+          ]
+        ]
+      },
+      "schema_version": 1
+    },
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 3,
+        "doc": "",
+        "namespace": "app.schema",
+        "ns_code": [
+          "ns",
+          "app.schema"
+        ]
+      },
+      "schema_version": 1
+    },
+    {
+      "command": "query.ns",
+      "data": {
+        "definition_count": 1,
+        "doc": "",
+        "namespace": "app.updater",
+        "ns_code": [
+          "ns",
+          "app.updater",
+          [
+            ":require",
+            [
+              "respo.cursor",
+              ":refer",
+              [
+                "update-state-tree"
+              ]
+            ]
+          ]
+        ]
+      },
+      "schema_version": 1
+    }
+  ],
+  "definitions": [
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "def",
+          "calcit-dirname",
+          "|"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.$meta/calcit-dirname",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:b9c073ddc99189680e33ec22dc7f5689",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "def",
+          "calcit-filename",
+          "|calcit.cirru"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.$meta/calcit-filename",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:a2706c65c80308f07d99e2a9ab5bd02b",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defcomp",
+          "comp-container",
+          [
+            "store"
+          ],
+          [
+            "let",
+            [
+              [
+                "states",
+                [
+                  ":states",
+                  "store"
+                ]
+              ],
+              [
+                "cursor",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap-or",
+                    [
+                      "get",
+                      "states",
+                      ":cursor"
+                    ],
+                    [
+                      "[]"
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'List",
+                    "'Dynamic"
+                  ]
+                ]
+              ],
+              [
+                "state",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap-or",
+                    [
+                      "get",
+                      "states",
+                      ":data"
+                    ],
+                    [
+                      "{}",
+                      [
+                        ":content",
+                        "|"
+                      ]
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'Map",
+                    "'Tag",
+                    "'String"
+                  ]
+                ]
+              ],
+              [
+                "log-plugin",
+                [
+                  "use-log",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":cont"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  [
+                    "option:unwrap",
+                    [
+                      "get",
+                      "state",
+                      ":content"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "[]",
+              [
+                ":effect",
+                "log-plugin"
+              ],
+              [
+                "div",
+                [
+                  "{}",
+                  [
+                    ":style",
+                    [
+                      "merge",
+                      "ui/global",
+                      "ui/column",
+                      [
+                        "{}",
+                        [
+                          ":padding",
+                          "|8px"
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "div",
+                  [
+                    "{}"
+                  ],
+                  [
+                    "input",
+                    [
+                      "{}",
+                      [
+                        ":value",
+                        [
+                          "option:unwrap",
+                          [
+                            "get",
+                            "state",
+                            ":content"
+                          ]
+                        ]
+                      ],
+                      [
+                        ":placeholder",
+                        "|Content"
+                      ],
+                      [
+                        ":style",
+                        [
+                          "merge",
+                          "ui/expand",
+                          "ui/input"
+                        ]
+                      ],
+                      [
+                        ":on-input",
+                        [
+                          "fn",
+                          [
+                            "e",
+                            "d!"
+                          ],
+                          [
+                            "hint-fn",
+                            [
+                              "{}",
+                              [
+                                ":return",
+                                "'Unit"
+                              ],
+                              [
+                                ":args",
+                                [
+                                  "[]",
+                                  [
+                                    "::",
+                                    "'Map",
+                                    "'Tag",
+                                    "'Dynamic"
+                                  ],
+                                  "'Dynamic"
+                                ]
+                              ]
+                            ]
+                          ],
+                          [
+                            "let",
+                            [
+                              [
+                                "value",
+                                [
+                                  ".unwrap",
+                                  [
+                                    "get",
+                                    "e",
+                                    ":value"
+                                  ]
+                                ]
+                              ]
+                            ],
+                            [
+                              "when",
+                              [
+                                "string?",
+                                "value"
+                              ],
+                              [
+                                "d!",
+                                [
+                                  "::",
+                                  ":states",
+                                  "cursor",
+                                  [
+                                    "assoc",
+                                    "state",
+                                    ":content",
+                                    "value"
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ],
+                          "&unit"
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "=<",
+                    "8",
+                    "nil"
+                  ],
+                  [
+                    "button",
+                    [
+                      "{}",
+                      [
+                        ":style",
+                        "ui/button"
+                      ],
+                      [
+                        ":inner-text",
+                        "|Run"
+                      ],
+                      [
+                        ":on-click",
+                        [
+                          "fn",
+                          [
+                            "e",
+                            "d!"
+                          ],
+                          [
+                            "println",
+                            [
+                              "option:unwrap",
+                              [
+                                "get",
+                                "state",
+                                ":content"
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "=<",
+                    "24",
+                    "nil"
+                  ],
+                  [
+                    "<>",
+                    [
+                      "str",
+                      "|Counter: ",
+                      [
+                        ":counter",
+                        "store"
+                      ]
+                    ]
+                  ],
+                  [
+                    "=<",
+                    "8",
+                    "nil"
+                  ],
+                  [
+                    "button",
+                    [
+                      "{}",
+                      [
+                        ":style",
+                        "ui/button"
+                      ],
+                      [
+                        ":inner-text",
+                        "|Inc counter"
+                      ],
+                      [
+                        ":on-click",
+                        [
+                          "fn",
+                          [
+                            "e",
+                            "d!"
+                          ],
+                          [
+                            "d!",
+                            [
+                              "::",
+                              ":inc",
+                              "nil"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "=<",
+                  "nil",
+                  "16"
+                ],
+                [
+                  "memo-comp-by",
+                  ":a",
+                  "comp-demo",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":a"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  "|A",
+                  "10"
+                ],
+                [
+                  "memo-comp-by",
+                  ":a2",
+                  "comp-demo",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":a2"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  "|A2",
+                  "10"
+                ],
+                [
+                  "memo-comp-by",
+                  ":a3",
+                  "comp-demo",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":a3"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  "|A3",
+                  "10"
+                ],
+                [
+                  "memo-comp-by",
+                  ":a4",
+                  "comp-demo",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":a4"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  "|A4",
+                  "10"
+                ],
+                [
+                  "memo-comp-by",
+                  ":a5",
+                  "comp-demo",
+                  [
+                    "decode-map-as",
+                    [
+                      ">>",
+                      "states",
+                      ":a5"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ],
+                  "|A5",
+                  "10"
+                ],
+                [
+                  ":ui",
+                  "log-plugin"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/comp-container",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Component"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:aa5ef9c85e5df243db2d3140167b093a",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defcomp",
+          "comp-demo",
+          [
+            "states",
+            "mark",
+            "level"
+          ],
+          [
+            "let",
+            [
+              [
+                "cursor",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap",
+                    [
+                      "get",
+                      "states",
+                      ":cursor"
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'List",
+                    "'Dynamic"
+                  ]
+                ]
+              ],
+              [
+                "state",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap-or",
+                    [
+                      "get",
+                      "states",
+                      ":data"
+                    ],
+                    [
+                      "{}",
+                      [
+                        ":draft",
+                        "|"
+                      ]
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'Map",
+                    "'Tag",
+                    "'String"
+                  ]
+                ]
+              ],
+              [
+                "log-plugin",
+                [
+                  "let",
+                  [
+                    [
+                      "cached-plugin",
+                      [
+                        "memo-value-by",
+                        "cursor",
+                        "use-log",
+                        [
+                          "decode-map-as",
+                          [
+                            ">>",
+                            "states",
+                            ":demo"
+                          ],
+                          [
+                            "::",
+                            "'Map",
+                            "'Tag",
+                            "'Dynamic"
+                          ]
+                        ],
+                        "|DEMO"
+                      ]
+                    ]
+                  ],
+                  [
+                    "if",
+                    [
+                      "struct?",
+                      "cached-plugin"
+                    ],
+                    [
+                      "struct-match",
+                      "cached-plugin",
+                      [
+                        "LogPlugin",
+                        "plugin",
+                        "plugin"
+                      ],
+                      [
+                        "_",
+                        "invalid",
+                        [
+                          "raise",
+                          "|Expected-LogPlugin"
+                        ]
+                      ]
+                    ],
+                    [
+                      "raise",
+                      "|Expected-LogPlugin"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "println",
+              "|Called:",
+              "mark"
+            ],
+            [
+              "[]",
+              [
+                ":effect",
+                "log-plugin"
+              ],
+              [
+                "div",
+                [
+                  "{}",
+                  [
+                    ":style",
+                    [
+                      "{}",
+                      [
+                        ":border",
+                        [
+                          "str",
+                          "|1px solid ",
+                          [
+                            "hsl",
+                            "0",
+                            "0",
+                            "90"
+                          ]
+                        ]
+                      ],
+                      [
+                        ":padding",
+                        "8"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "input",
+                  [
+                    "{}",
+                    [
+                      ":value",
+                      [
+                        "option:unwrap",
+                        [
+                          "get",
+                          "state",
+                          ":draft"
+                        ]
+                      ]
+                    ],
+                    [
+                      ":style",
+                      "ui/input"
+                    ],
+                    [
+                      ":on-input",
+                      [
+                        "fn",
+                        [
+                          "e",
+                          "d!"
+                        ],
+                        [
+                          "hint-fn",
+                          [
+                            "{}",
+                            [
+                              ":return",
+                              "'Unit"
+                            ],
+                            [
+                              ":args",
+                              [
+                                "[]",
+                                [
+                                  "::",
+                                  "'Map",
+                                  "'Tag",
+                                  "'Dynamic"
+                                ],
+                                "'Dynamic"
+                              ]
+                            ]
+                          ]
+                        ],
+                        [
+                          "let",
+                          [
+                            [
+                              "value",
+                              [
+                                ".unwrap",
+                                [
+                                  "get",
+                                  "e",
+                                  ":value"
+                                ]
+                              ]
+                            ]
+                          ],
+                          [
+                            "when",
+                            [
+                              "string?",
+                              "value"
+                            ],
+                            [
+                              "d!",
+                              [
+                                "::",
+                                ":states",
+                                "cursor",
+                                [
+                                  "assoc",
+                                  "state",
+                                  ":draft",
+                                  "value"
+                                ]
+                              ]
+                            ]
+                          ]
+                        ],
+                        "&unit"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "<>",
+                  [
+                    "str",
+                    "|This is a demo: ",
+                    "mark"
+                  ]
+                ],
+                [
+                  "pre",
+                  [
+                    "{}",
+                    [
+                      ":style",
+                      [
+                        "{}",
+                        [
+                          ":background",
+                          [
+                            "hsl",
+                            "0",
+                            "0",
+                            "95"
+                          ]
+                        ],
+                        [
+                          ":padding",
+                          "|4px 8px"
+                        ]
+                      ]
+                    ],
+                    [
+                      ":inner-text",
+                      [
+                        "trim",
+                        [
+                          "format-cirru-edn",
+                          "state"
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  ";",
+                  "if",
+                  [
+                    ">",
+                    "level",
+                    "10"
+                  ],
+                  [
+                    "comp-demo",
+                    [
+                      "decode-map-as",
+                      [
+                        ">>",
+                        "states",
+                        "level"
+                      ],
+                      [
+                        "::",
+                        "'Map",
+                        "'Tag",
+                        "'Dynamic"
+                      ]
+                    ],
+                    [
+                      "str",
+                      "|M-",
+                      "level"
+                    ],
+                    [
+                      "dec",
+                      "level"
+                    ]
+                  ]
+                ],
+                [
+                  ":ui",
+                  "log-plugin"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/comp-demo",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Component"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'Map",
+                "'Tag",
+                "'Dynamic"
+              ],
+              "'String",
+              "'Number"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:70c0139550638a9d1bbdcb9f378d358b",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defeffect",
+          "effect-log",
+          [
+            "mark"
+          ],
+          [
+            "action",
+            "el",
+            "at?"
+          ],
+          [
+            "js-ffi.browser/console-log!",
+            [
+              "str-spaced",
+              "|Effect happen:",
+              "mark",
+              "action"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/effect-log",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Effect"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'String"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": [
+          {
+            "code": [
+              "assert=",
+              ":effect-log",
+              [
+                ":name",
+                [
+                  "effect-log",
+                  "|demo"
+                ]
+              ]
+            ],
+            "name": "constructs-typed-effect",
+            "tags": []
+          }
+        ]
+      },
+      "diagnostics": [],
+      "revision": "md5:e5f90bac03ba3f62914f49db333aa54c",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "use-log",
+          [
+            "states",
+            "mark"
+          ],
+          [
+            "let",
+            [
+              [
+                "cursor",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap",
+                    [
+                      "get",
+                      "states",
+                      ":cursor"
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'List",
+                    "'Dynamic"
+                  ]
+                ]
+              ],
+              [
+                "state",
+                [
+                  "decode-map-as",
+                  [
+                    "option:unwrap-or",
+                    [
+                      "get",
+                      "states",
+                      ":data"
+                    ],
+                    [
+                      "{}",
+                      [
+                        ":draft",
+                        "|"
+                      ]
+                    ]
+                  ],
+                  [
+                    "::",
+                    "'Map",
+                    "'Tag",
+                    "'String"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "LogPlugin",
+              ":ui",
+              [
+                "div",
+                [
+                  "{}"
+                ],
+                [
+                  "<>",
+                  [
+                    "str",
+                    "|LOG ::: ",
+                    "mark",
+                    "| :: ",
+                    [
+                      "option:unwrap",
+                      [
+                        "get",
+                        "state",
+                        ":draft"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "input",
+                  [
+                    "{}",
+                    [
+                      ":value",
+                      [
+                        "option:unwrap",
+                        [
+                          "get",
+                          "state",
+                          ":draft"
+                        ]
+                      ]
+                    ],
+                    [
+                      ":style",
+                      "ui/input"
+                    ],
+                    [
+                      ":on-input",
+                      [
+                        "fn",
+                        [
+                          "e",
+                          "d!"
+                        ],
+                        [
+                          "hint-fn",
+                          [
+                            "{}",
+                            [
+                              ":return",
+                              "'Unit"
+                            ],
+                            [
+                              ":args",
+                              [
+                                "[]",
+                                [
+                                  "::",
+                                  "'Map",
+                                  "'Tag",
+                                  "'Dynamic"
+                                ],
+                                "'Dynamic"
+                              ]
+                            ]
+                          ]
+                        ],
+                        [
+                          "let",
+                          [
+                            [
+                              "value",
+                              [
+                                ".unwrap",
+                                [
+                                  "get",
+                                  "e",
+                                  ":value"
+                                ]
+                              ]
+                            ]
+                          ],
+                          [
+                            "when",
+                            [
+                              "string?",
+                              "value"
+                            ],
+                            [
+                              "d!",
+                              [
+                                "::",
+                                ":states",
+                                "cursor",
+                                [
+                                  "assoc",
+                                  "state",
+                                  ":draft",
+                                  "value"
+                                ]
+                              ]
+                            ]
+                          ]
+                        ],
+                        "&unit"
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              ":effect",
+              [
+                "effect-log",
+                "mark"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/use-log",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'app.schema/LogPlugin"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'Map",
+                "'Tag",
+                "'Dynamic"
+              ],
+              "'String"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:d310f349be8547100f7f29a3001a7551",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "use-plugin",
+          [
+            "mark"
+          ],
+          [
+            "div",
+            [
+              "{}",
+              [
+                ":style",
+                [
+                  "{}",
+                  [
+                    ":border",
+                    [
+                      "str",
+                      "|1px solid ",
+                      [
+                        "hsl",
+                        "0",
+                        "0",
+                        "93"
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "<>",
+              [
+                "str",
+                "|log ::: ",
+                "mark"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/use-plugin",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Element"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'String"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:a4de27fbec1aa759a8785839aff08b56",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "def",
+          "dev?",
+          "true"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.config/dev?",
+        "js_ffi": null,
+        "schema": "'Bool",
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:e7cbb41098622ba96b40ce2858658eec",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "def",
+          "site",
+          [
+            "{}",
+            [
+              ":storage-key",
+              "|workflow"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.config/site",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'Map",
+          "'Tag",
+          "'String"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:b2618713bb1fa264b6911896f1f1fc0e",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defref",
+          "*store",
+          "schema/store"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/*store",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'Ref",
+          "'app.schema/Store"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:2c4334073825939771c3ecf660c2a1b5",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "dispatch!",
+          [
+            "op"
+          ],
+          [
+            "when",
+            "config/dev?",
+            [
+              "println",
+              "|Dispatch:",
+              "op"
+            ]
+          ],
+          [
+            "reset!",
+            "*store",
+            [
+              "updater",
+              "@*store",
+              "op"
+            ]
+          ],
+          "&unit"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/dispatch!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:6852afd0af9c6a0c2127d6048270c25e",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "main!",
+          [],
+          [
+            "load-console-formatter!"
+          ],
+          [
+            "println",
+            "|Running mode:",
+            [
+              "if",
+              "config/dev?",
+              "|dev",
+              "|release"
+            ]
+          ],
+          [
+            "render-app!"
+          ],
+          [
+            "add-watch!",
+            "*store",
+            ":changes",
+            [
+              "fn",
+              [
+                "store",
+                "prev"
+              ],
+              [
+                "render-app!"
+              ]
+            ]
+          ],
+          [
+            "println",
+            "|App started."
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/main!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:9f1da11904e236ca900fd3b8125b3f75",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "mount-target",
+          [],
+          [
+            "match",
+            [
+              "js-ffi.browser/query-selector",
+              "|.app"
+            ],
+            [
+              [
+                ":none"
+              ],
+              [
+                "raise",
+                "|Missing .app mount target"
+              ]
+            ],
+            [
+              [
+                ":some",
+                "host"
+              ],
+              [
+                "respo.ffi.browser/narrow-element",
+                "host"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/mount-target",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.dom/DomElement"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:297997629e7995fdae41b447acf79b84",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "reload!",
+          [],
+          [
+            "clear-cache!"
+          ],
+          [
+            "remove-watch!",
+            "*store",
+            ":changes"
+          ],
+          [
+            "add-watch!",
+            "*store",
+            ":changes",
+            [
+              "fn",
+              [
+                "store",
+                "prev"
+              ],
+              [
+                "render-app!"
+              ]
+            ]
+          ],
+          [
+            "render-app!"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/reload!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:674d6d3acb05e90912d8162a333f1ade",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "render-app!",
+          [],
+          [
+            "render-with!",
+            [
+              "mount-target"
+            ],
+            [
+              "fn",
+              [],
+              [
+                "dbg",
+                [
+                  "comp-container",
+                  "@*store"
+                ]
+              ]
+            ],
+            "dispatch!"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/render-app!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:404d584fac905c220fc5cbbb519c9b5b",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defstruct",
+          "LogPlugin",
+          [
+            ":ui",
+            "'respo.schema/Element"
+          ],
+          [
+            ":effect",
+            "'respo.schema/Effect"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/LogPlugin",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:a2cf281d5c258232f3412857b951c1ce",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defstruct",
+          "Store",
+          [
+            ":states",
+            [
+              "::",
+              "'Map",
+              "'Tag",
+              "'Dynamic"
+            ]
+          ],
+          [
+            ":counter",
+            "'Number"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/Store",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:de3dfd89b91c296d43c3eb288312dc2a",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "def",
+          "store",
+          [
+            "Store",
+            ":states",
+            [
+              "{}",
+              [
+                ":cursor",
+                [
+                  "[]"
+                ]
+              ]
+            ],
+            ":counter",
+            "0"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/store",
+        "js_ffi": null,
+        "schema": "'app.schema/Store",
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:c361ce644f88d8ffbe9d2c78e5fa5336",
+      "schema_version": 1
+    },
+    {
+      "command": "query.def",
+      "data": {
+        "code": [
+          "defn",
+          "updater",
+          [
+            "store",
+            "op"
+          ],
+          [
+            "if",
+            [
+              "enum?",
+              "op"
+            ],
+            [
+              "match",
+              "op",
+              [
+                [
+                  ":states",
+                  "cursor",
+                  "data"
+                ],
+                [
+                  "assoc",
+                  "store",
+                  ":states",
+                  [
+                    "decode-map-as",
+                    [
+                      "update-state-tree",
+                      [
+                        ":states",
+                        "store"
+                      ],
+                      [
+                        "decode-map-as",
+                        "cursor",
+                        [
+                          "::",
+                          "'List",
+                          "'Dynamic"
+                        ]
+                      ],
+                      "data"
+                    ],
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Dynamic"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                [
+                  ":inc",
+                  "_"
+                ],
+                [
+                  "assoc",
+                  "store",
+                  ":counter",
+                  [
+                    "inc",
+                    [
+                      ":counter",
+                      "store"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "_",
+                "store"
+              ]
+            ],
+            "store"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.updater/updater",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'app.schema/Store"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      "diagnostics": [],
+      "revision": "md5:71b5142e67ef3868821c186cbb1b83a2",
+      "schema_version": 1
+    }
+  ],
+  "config": {
+    "schema_version": 1,
+    "command": "config.show",
+    "data": {
+      "package": "app",
+      "version": "0.0.3",
+      "selected_entry": null,
+      "entries": [
+        {
+          "name": "default",
+          "mode": "js",
+          "target": null,
+          "init_fn": "app.main/main!",
+          "reload_fn": "app.main/reload!",
+          "description": "Browser-example",
+          "modules": [
+            "respo.calcit/",
+            "respo-ui.calcit/",
+            "js-ffi/"
+          ],
+          "type_slots": {},
+          "feature_policy": {}
+        }
+      ],
+      "verification_schema_version": 1,
+      "verification_profiles": []
+    },
+    "diagnostics": [],
+    "revision": "md5:8f5936b3f929ea1a98ccb9c09b9e1399"
+  }
+}

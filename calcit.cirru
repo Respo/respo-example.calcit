@@ -15,27 +15,31 @@
             let
                 states $ :states store
                 cursor $ decode-map-as
-                  option:unwrap-or (get states :cursor) ([])
+                  .unwrap-or (get states :cursor) ([])
                   :: 'List 'Dynamic
                 state $ decode-map-as
-                  option:unwrap-or (get states :data)
+                  .unwrap-or (get states :data)
                     {} $ :content |
                   :: 'Map 'Tag 'String
                 log-plugin $ use-log
                   decode-map-as (>> states :cont) (:: 'Map 'Tag 'Dynamic)
-                  option:unwrap $ get state :content
+                  .unwrap $ get state :content
               [] (:effect log-plugin)
                 div
-                  {} $ :style $ merge ui/global ui/column
+                  {} $ :style $ .merge ui/global ui/column
                     {} $ :padding |8px
                   div ({})
                     input $ {}
-                      :value $ option:unwrap $ get state :content
+                      :value $ .unwrap $ get state :content
                       :placeholder |Content
-                      :style $ merge ui/expand ui/input
+                      :style $ .merge ui/expand ui/input
                       :on-input $ fn (e d!)
                         hint-fn $ {} (:return 'Unit)
-                          :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
+                          :args $ [] (:: 'Map 'Tag 'Dynamic)
+                            :: 'Fn $ {}
+                              :args $ [] 'Dynamic
+                              :rest 'Dynamic
+                              :return 'Unit
                         let
                             value $ .unwrap $ get e :value
                           when (string? value)
@@ -44,7 +48,7 @@
                     =< 8 nil
                     button $ {} (:style ui/button) (:inner-text |Run)
                       :on-click $ fn (e d!)
-                        println $ option:unwrap $ get state :content
+                        println $ .unwrap $ get state :content
                     =< 24 nil
                     <> $ str "|Counter: " $ :counter store
                     =< 8 nil
@@ -75,10 +79,10 @@
           :code $ quote $ defcomp comp-demo (states mark level)
             let
                 cursor $ decode-map-as
-                  option:unwrap $ get states :cursor
+                  .unwrap $ get states :cursor
                   :: 'List 'Dynamic
                 state $ decode-map-as
-                  option:unwrap-or (get states :data)
+                  .unwrap-or (get states :data)
                     {} $ :draft |
                   :: 'Map 'Tag 'String
                 log-plugin $ let
@@ -94,13 +98,17 @@
                 div
                   {} $ :style $ {}
                     :border $ str "|1px solid " $ hsl 0 0 90
-                    :padding 8
+                    :padding |8px
                   input $ {}
-                    :value $ option:unwrap $ get state :draft
+                    :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
                       hint-fn $ {} (:return 'Unit)
-                        :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
+                        :args $ [] (:: 'Map 'Tag 'Dynamic)
+                          :: 'Fn $ {}
+                            :args $ [] 'Dynamic
+                            :rest 'Dynamic
+                            :return 'Unit
                       let
                           value $ .unwrap $ get e :value
                         when (string? value)
@@ -135,21 +143,25 @@
           :code $ quote $ defn use-log (states mark)
             let
                 cursor $ decode-map-as
-                  option:unwrap $ get states :cursor
+                  .unwrap $ get states :cursor
                   :: 'List 'Dynamic
                 state $ decode-map-as
-                  option:unwrap-or (get states :data)
+                  .unwrap-or (get states :data)
                     {} $ :draft |
                   :: 'Map 'Tag 'String
               LogPlugin :ui
                 div ({})
-                  <> $ str "|LOG ::: " mark "| :: " $ option:unwrap (get state :draft)
+                  <> $ str "|LOG ::: " mark "| :: " $ .unwrap (get state :draft)
                   input $ {}
-                    :value $ option:unwrap $ get state :draft
+                    :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
                       hint-fn $ {} (:return 'Unit)
-                        :args $ [] (:: 'Map 'Tag 'Dynamic) 'Dynamic
+                        :args $ [] (:: 'Map 'Tag 'Dynamic)
+                          :: 'Fn $ {}
+                            :args $ [] 'Dynamic
+                            :rest 'Dynamic
+                            :return 'Unit
                       let
                           value $ .unwrap $ get e :value
                         when (string? value)

@@ -4,16 +4,19 @@ Respo Calcit Example
 
 ### 使用者影响：正式 Calcit 0.30.1 配对
 
-CLI/procs一起升级到正式 **0.30.1**，模块同步正式Respo0.16.124、UI0.8.0、JS-FFI0.2.5，
-传递Router0.8.37。请重新安装完整依赖图、生成JS并刷新，不混用旧alpha缓存。
-本次不改Snapshot、输入与计数行为、keyed memo合同、effect或页面布局，不新增存储或功能。
-CI保留all-defs、完整strict、原质量/业务门禁，退役两个旧analyze别名，不增加脚本或预算。
+CLI/procs保持配对正式 **0.30.1**，模块同步正式Respo0.16.126、UI0.8.1、JS-FFI0.2.6，
+传递Router0.8.38。请重新安装完整依赖图、生成JS并刷新，不混用旧alpha缓存；Vite精确固定8.3.3。
+本轮迁移14处旧Option/Map调用，一处padding改为等价8px String；三个输入回调的dispatch参数
+从Dynamic收紧为Respo实际提供的 `Fn<Dynamic, Unit, rest Dynamic>`，不伪造封闭操作合同。
+输入与计数行为、五个独立keyed memo实例、effect和页面布局不变，不新增存储或功能。
+当前reload!没有HUD导入，本轮不凭空添加，也不把其他项目真实hud!改为raise。
+CI保留all-defs、完整strict、原质量/业务门禁，全部预算和原断言不变，不增加验证脚本或框架。
 不合并或部署生产、不发布tag/npm，原COS/CDN和服务器路径保持不变。
 
 ### 开发
 
 当前使用配对的正式Calcit/procs0.30.1、caps0.1.1、Node24和Yarn4.18.0。
-正式CLI/运行验收以本次PR为准，之前alpha.5结果不作为新证明。
+正式CLI/运行验收以当前源码和精确提交为准，旧alpha或旧绿色检查不代替本轮迁移验证。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
 ```bash
@@ -43,8 +46,8 @@ node --test scripts/upgrade.test.mjs
 ```
 
 keyed memo 示例在计数器变化时复用五个组件，只在局部状态变化时重新计算对应组件。
-渲染使用 `render-with!` 管理 memo frame。回归测试保留原有六项断言，
-补充真实 `event->edn` Map 经输入回调和 updater 的测试，避免用 Struct 事件夹具掩盖 DOM 错误。
+渲染使用 `render-with!` 管理 memo frame。原七项Node测试及一项附着测试均保持，
+包含真实 `event->edn` Map 经输入回调和 updater 的测试，避免用 Struct 事件夹具掩盖 DOM 错误。
 事件读取遵守 Map 合同；缓存中的插件通过实际 Struct 检查后读取，不以强转伪造类型。
 
 ### Workflow
@@ -60,9 +63,19 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
 模块与工具链均固定正式版本，不新增alpha/hash引用。
-质量基线仅收紧 schemaDynamic 5→4、unresolved 10→9，unsafe/deprecated 仍为 0。
+原质量基线保持：schemaDynamic 4、unresolved 9，unsafe/deprecated 为 0，不放宽任何定义。
 原有五处排版占位 nil 与真实异构状态边界保留，不把它们伪装成具体类型。
 本 PR 不授权合并或生产部署。
+
+`yarn dev` 先编译一次再启动Vite，实时源码编译仍另开原watch命令，不引入concurrently。
+临时迁移事务只在官方Linux 0.30.1 CI生成Snapshot，本地仅只读query并核验成功产物，
+不运行本地Caps或编译器检查/build/codegen/mutation。
+官方Linux 0.30.1事务CI已通过改写前后原附着测试1项、Node回归7项、all-defs167项，
+改写后完整strict通过，原质量预算零增量；仍有4处真实开放类型边界，不声称Dynamic清零。
+同一CI静态产物在全新localhost实际验收计数0→1→2、顶部/A/A2/插件输入、Run输出、
+五实例memo隔离，以及effect mount/before-update/update日志；计数变化不重算五个memo，
+A/A2输入只重算对应实例。刷新回计数0和空输入，控制台无warning/error。
+未测试HMR、所有effect卸载路径或移动端，不凭版本声明或类型计数声称全部行为已验证。
 
 ### 许可证
 

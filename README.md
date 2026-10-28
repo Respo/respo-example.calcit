@@ -2,20 +2,17 @@
 Respo Calcit Example
 ----
 
-### 使用者影响：正式 Calcit 0.30.1 配对
+### 使用者影响：正式 Calcit 0.31.0 配对
 
-CLI/procs保持配对正式 **0.30.1**，模块同步正式Respo0.16.126、UI0.8.1、JS-FFI0.2.6，
-传递Router0.8.38。请重新安装完整依赖图、生成JS并刷新，不混用旧alpha缓存；Vite精确固定8.3.3。
-本轮迁移14处旧Option/Map调用，一处padding改为等价8px String；三个输入回调的dispatch参数
-从Dynamic收紧为Respo实际提供的 `Fn<Dynamic, Unit, rest Dynamic>`，不伪造封闭操作合同。
-输入与计数行为、五个独立keyed memo实例、effect和页面布局不变，不新增存储或功能。
-当前reload!没有HUD导入，本轮不凭空添加，也不把其他项目真实hud!改为raise。
-CI保留all-defs、完整strict、原质量/业务门禁，全部预算和原断言不变，不增加验证脚本或框架。
-不合并或部署生产、不发布tag/npm，原COS/CDN和服务器路径保持不变。
+CLI/procs 配对正式 **0.31.0**，模块使用已发布 Respo 0.17.0-alpha.4、UI 0.9.0-alpha.4、JS-FFI 0.2.7，传递 Router 0.9.0-alpha.3。
+UI 依赖仍在 alpha 线，请重新安装完整依赖图、生成 JS 并刷新，不与旧 0.30.x 缓存混用；Vite 仍精确固定 8.3.3。
+本轮更新依赖，并将默认入口的 dispatch-op 显式绑定为原有 Dynamic 合同。dispatcher/updater 原本接受开放输入，继续由 updater 的 enum? 守卫筛选；不改函数 schema 或业务代码。输入与计数行为、五个独立 keyed memo 实例、effect 和页面布局均保留。
+原完整 strict、质量预算、七项 Node 测试和一项附着测试保持不变，不增加验证脚本或框架。
+当前 reload! 没有 HUD 导入，本轮不凭空添加；不合并或部署生产，不发布 tag/npm，原 COS/CDN 和服务器路径保持不变。
 
 ### 开发
 
-当前使用配对的正式Calcit/procs0.30.1、caps0.1.1、Node24和Yarn4.18.0。
+当前使用配对的正式Calcit/procs0.31.0、caps0.1.1、Node24和Yarn4.18.0。
 正式CLI/运行验收以当前源码和精确提交为准，旧alpha或旧绿色检查不代替本轮迁移验证。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
@@ -27,8 +24,8 @@ calcit calcit.cirru --watch # compile on changes
 yarn vite # serve at localhost:5173
 ```
 
-模块使用本文开头的完整正式版本图。
-CI 独立执行 strict Caps 解析。本次本地验收未运行 Caps；
+模块使用本文开头的完整已发布版本图。
+本地与 CI 均执行 strict Caps 解析；
 本地开发仍须执行上述安装步骤，生成所需的模块链接。
 挂载节点由类型化的
 `js-ffi.browser/query-selector` 查询，缺失时明确报错；effect 日志使用
@@ -62,14 +59,16 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 每个 PR 独立排队，与生产队列分开，不取消正在上传的任务。
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
-模块与工具链均固定正式版本，不新增alpha/hash引用。
+模块固定已发布 tag，工具链使用正式 0.31.0，不使用 hash/main 模块引用。
 原质量基线保持：schemaDynamic 4、unresolved 9，unsafe/deprecated 为 0，不放宽任何定义。
 原有五处排版占位 nil 与真实异构状态边界保留，不把它们伪装成具体类型。
 本 PR 不授权合并或生产部署。
 
 `yarn dev` 先编译一次再启动Vite，实时源码编译仍另开原watch命令，不引入concurrently。
-临时迁移事务只在官方Linux 0.30.1 CI生成Snapshot，本地仅只读query并核验成功产物，
-不运行本地Caps或编译器检查/build/codegen/mutation。
+
+### 历史：0.30.1 源码迁移验收
+
+当时使用临时官方 Linux CI 生成 Snapshot；下述记录属于旧迁移，不代替当前 0.31.0 验收。
 官方Linux 0.30.1事务CI已通过改写前后原附着测试1项、Node回归7项、all-defs167项，
 改写后完整strict通过，原质量预算零增量；仍有4处真实开放类型边界，不声称Dynamic清零。
 同一CI静态产物在全新localhost实际验收计数0→1→2、顶部/A/A2/插件输入、Run输出、

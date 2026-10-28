@@ -34,12 +34,9 @@
                       :placeholder |Content
                       :style $ .merge ui/expand ui/input
                       :on-input $ fn (e d!)
-                        hint-fn $ {} (:return 'Unit)
-                          :args $ [] (:: 'Map 'Tag 'Dynamic)
-                            :: 'Fn $ {}
-                              :args $ [] 'Dynamic
-                              :rest 'Dynamic
-                              :return 'Unit
+                        hint-fn $ Fn (Map Tag Dynamic)
+                          Fn Dynamic & Dynamic $ -> Unit
+                          -> Unit
                         let
                             value $ .unwrap $ get e :value
                           when (string? value)
@@ -73,8 +70,7 @@
                     , |A5 10
                   :ui log-plugin
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
-            :args $ [] 'app.schema/Store
+          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component)
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-demo (states mark level)
             let
@@ -103,12 +99,9 @@
                     :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ {} (:return 'Unit)
-                        :args $ [] (:: 'Map 'Tag 'Dynamic)
-                          :: 'Fn $ {}
-                            :args $ [] 'Dynamic
-                            :rest 'Dynamic
-                            :return 'Unit
+                      hint-fn $ Fn (Map Tag Dynamic)
+                        Fn Dynamic & Dynamic $ -> Unit
+                        -> Unit
                       let
                           value $ .unwrap $ get e :value
                         when (string? value)
@@ -127,15 +120,12 @@
                       dec level
                   :ui log-plugin
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
-            :args $ [] (:: 'Map 'Tag 'Dynamic) 'String 'Number
+          :schema $ quote $ Fn (Map Tag Dynamic) String Number (-> respo.schema/Component)
         'effect-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defeffect effect-log (mark) (action el at?)
             js-ffi.browser/console-log! $ str-spaced "|Effect happen:" mark action
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.schema/Effect)
-            :args $ [] 'String
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn String (-> respo.schema/Effect) (:features :js-ffi)
           :tests $ [] $ %{} 'TestEntry (:name |constructs-typed-effect)
             :code $ quote $ assert= :effect-log
               :name $ effect-log |demo
@@ -156,12 +146,9 @@
                     :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ {} (:return 'Unit)
-                        :args $ [] (:: 'Map 'Tag 'Dynamic)
-                          :: 'Fn $ {}
-                            :args $ [] 'Dynamic
-                            :rest 'Dynamic
-                            :return 'Unit
+                      hint-fn $ Fn (Map Tag Dynamic)
+                        Fn Dynamic & Dynamic $ -> Unit
+                        -> Unit
                       let
                           value $ .unwrap $ get e :value
                         when (string? value)
@@ -169,8 +156,7 @@
                       , &unit
                 , :effect $ effect-log mark
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'app.schema/LogPlugin)
-            :args $ [] (:: 'Map 'Tag 'Dynamic) 'String
+          :schema $ quote $ Fn (Map Tag Dynamic) String (-> app.schema/LogPlugin)
         'use-plugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-plugin (mark)
             div
@@ -178,8 +164,7 @@
                 :border $ str "|1px solid " $ hsl 0 0 93
               <> $ str "|log ::: " mark
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.schema/Element)
-            :args $ [] 'String
+          :schema $ quote $ Fn String (-> respo.schema/Element)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require (respo-ui.core :as ui)
@@ -193,12 +178,12 @@
         'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def dev? true
           :examples $ []
-          :schema $ :: 'Bool
+          :schema $ quote Bool
         'site $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def site
             {} $ :storage-key |workflow
           :examples $ []
-          :schema $ :: 'Map 'Tag 'String
+          :schema $ quote $ Map Tag String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.config
     'app.main $ %{} 'FileEntry
@@ -206,15 +191,14 @@
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *store schema/store
           :examples $ []
-          :schema $ :: 'Ref 'app.schema/Store
+          :schema $ quote $ Ref app.schema/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
@@ -222,33 +206,27 @@
             add-watch! *store :changes $ fn (store prev) (render-app!)
             println "|App started."
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn mount-target ()
             match (js-ffi.browser/query-selector |.app)
               (:none) (raise "|Missing .app mount target")
               (:some host) (respo.ffi.browser/narrow-element host)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'respo.dom/DomElement)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> respo.dom/DomElement) (:features :js-ffi)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (clear-cache!) (remove-watch! *store :changes)
             add-watch! *store :changes $ fn (store prev) (render-app!)
             render-app!
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
             render-with! (mount-target)
               fn () $ dbg $ comp-container @*store
               , dispatch!
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
@@ -262,20 +240,20 @@
         'LogPlugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct LogPlugin (:ui 'respo.schema/Element) (:effect 'respo.schema/Effect)
           :examples $ []
-          :schema $ :: 'StructDef
+          :schema $ quote StructDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ :: 'Map 'Tag 'Dynamic
+            :states $ quote $ Map Tag Dynamic
             :counter 'Number
           :examples $ []
-          :schema $ :: 'StructDef
+          :schema $ quote StructDef
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
             Store :states
               {} $ :cursor $ []
               , :counter 0
           :examples $ []
-          :schema $ :: 'app.schema/Store
+          :schema $ quote app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
@@ -295,8 +273,7 @@
                 _ store
               , store
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
-            :args $ [] 'app.schema/Store 'Dynamic
+          :schema $ quote $ Fn app.schema/Store Dynamic (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require $ respo.cursor :refer $ update-state-tree

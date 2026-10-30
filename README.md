@@ -2,30 +2,24 @@
 Respo Calcit Example
 ----
 
-### 0.32.0 迁移候选：使用者影响
+### 使用者影响
 
-CLI/procs 配对正式 0.32.0，需要重新安装依赖、生成 JS 并完整刷新。
-Respo 0.17.0、UI 0.9.0 当前使用本地候选，JS-FFI 为 0.2.8；
-正式标签整图尚待验收，不能用本地候选结果替代严格 Caps 安装。
+CLI / `@calcit/procs` 配对正式 **0.32.1**，升级后重新安装整张依赖图、生成JS并完整
+刷新。使用已发布Respo **0.17.1**、UI **0.9.0** 和JS-FFI **0.2.9**，传递Router仍有
+alpha依赖，不宣称整图全部稳定。Caps strict/toolchain使用真实发布图，不依赖本地候选。
 
-官方转换 4 处类型写法，17 个定义 schema 保持。输入、计数器、五个独立 keyed
-memo 实例、effect、开放事件入口与原 Enum 守卫不变。不放宽质量基线、添加
-脚本或测试框架；npm 发布年龄门禁为一小时。本轮完整 strict、全部定义、原质量
-基线、七项 Node 和一项附着测试、构建及 immutable 安装通过。实际五个 keyed
-实例独立输入、主输入/Run 和计数器通过，浏览器无警告或错误，独立评审无问题。
-正式依赖整图和远端 CI 尚待验收。下方 0.31 配对说明为历史记录。
+官方工具转换4处类型表达式，17个定义schema保持。输入、计数器、五个独立keyed memo
+实例、effect和布局不变。dispatch-op显式绑定原Dynamic合同，开放入口仍由updater的
+enum?守卫筛选，不假装更窄的函数合同。当前reload!没有HUD导入，不凭空添加。
 
-### 使用者影响：正式 Calcit 0.31.0 配对
-
-CLI/procs 配对正式 **0.31.0**，模块使用已发布 Respo 0.17.0-alpha.4、UI 0.9.0-alpha.4、JS-FFI 0.2.7，传递 Router 0.9.0-alpha.3。
-UI 依赖仍在 alpha 线，请重新安装完整依赖图、生成 JS 并刷新，不与旧 0.30.x 缓存混用；Vite 仍精确固定 8.3.3。
-本轮更新依赖，并将默认入口的 dispatch-op 显式绑定为原有 Dynamic 合同。dispatcher/updater 原本接受开放输入，继续由 updater 的 enum? 守卫筛选；不改函数 schema 或业务代码。输入与计数行为、五个独立 keyed memo 实例、effect 和页面布局均保留。
-原完整 strict、质量预算、七项 Node 测试和一项附着测试保持不变，不增加验证脚本或框架。
-当前 reload! 没有 HUD 导入，本轮不凭空添加；不合并或部署生产，不发布 tag/npm，原 COS/CDN 和服务器路径保持不变。
+原完整strict、全定义、质量基线、七项Node及一项附带测试保留，不新增脚本或框架，
+不放宽任何定义预算。npm等待保持一小时，无单包例外。
+此前0.32.0候选已验收五个实例独立输入、主输入/Run和计数器，本次未重跑浏览器。
+不合并或部署生产，不发布tag/npm，原COS/CDN和服务器路径保持。
 
 ### 开发
 
-当前使用配对的正式Calcit/procs0.31.0、caps0.1.1、Node24和Yarn4.18.0。
+当前使用配对的正式Calcit/procs0.32.1、caps0.1.1、Node24和Yarn4.18.0。
 正式CLI/运行验收以当前源码和精确提交为准，旧alpha或旧绿色检查不代替本轮迁移验证。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
@@ -66,28 +60,21 @@ https://github.com/calcit-lang/respo-calcit-workflow
 
 ### COS / CDN 部署
 
-COS Action 固定到正式 1.2.0 的发布提交，配置 `public-base-url` 使用内置
+COS Action 使用与原SHA对应的精确正式tag v1.2.0，接受tag可移动风险，配置 `public-base-url` 使用内置
 逐文件公网 checksum verify，沿用默认 `verify-*` 参数，不新增验证脚本。
 PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 每个 PR 独立排队，与生产队列分开，不取消正在上传的任务。
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
-模块固定已发布 tag，工具链使用正式 0.31.0，不使用 hash/main 模块引用。
+模块固定已发布 tag，工具链使用正式 0.32.1，不使用 hash/main 模块引用。
 原质量基线保持：schemaDynamic 4、unresolved 9，unsafe/deprecated 为 0，不放宽任何定义。
 原有五处排版占位 nil 与真实异构状态边界保留，不把它们伪装成具体类型。
 本 PR 不授权合并或生产部署。
 
 `yarn dev` 先编译一次再启动Vite，实时源码编译仍另开原watch命令，不引入concurrently。
 
-### 历史：0.30.1 源码迁移验收
-
-当时使用临时官方 Linux CI 生成 Snapshot；下述记录属于旧迁移，不代替当前 0.31.0 验收。
-官方Linux 0.30.1事务CI已通过改写前后原附着测试1项、Node回归7项、all-defs167项，
-改写后完整strict通过，原质量预算零增量；仍有4处真实开放类型边界，不声称Dynamic清零。
-同一CI静态产物在全新localhost实际验收计数0→1→2、顶部/A/A2/插件输入、Run输出、
-五实例memo隔离，以及effect mount/before-update/update日志；计数变化不重算五个memo，
-A/A2输入只重算对应实例。刷新回计数0和空输入，控制台无warning/error。
-未测试HMR、所有effect卸载路径或移动端，不凭版本声明或类型计数声称全部行为已验证。
+原排版占位nil与异构状态保留，不伪装为具体类型。既往实际页面验收不代表HMR、
+全部effect卸载路径或移动端已验证；本次以精确PR提交的CI和原测试结果为准。
 
 ### 许可证
 

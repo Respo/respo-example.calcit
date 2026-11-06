@@ -6,7 +6,7 @@
     {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/ |js-ffi/
-      :type-slots $ {} $ :dispatch-op 'Dynamic
+      :type-slots $ {} $ :dispatch-op |app.schema/DispatchOp
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -16,13 +16,13 @@
                 states $ :states store
                 cursor $ decode-map-as
                   .unwrap-or (get states :cursor) ([])
-                  :: 'List 'Dynamic
+                  List respo.schema/CoordKey
                 state $ decode-map-as
                   .unwrap-or (get states :data)
                     {} $ :content |
-                  :: 'Map 'Tag 'String
+                  Map Tag String
                 log-plugin $ use-log
-                  decode-map-as (>> states :cont) (:: 'Map 'Tag 'Dynamic)
+                  decode-map-as (>> states :cont) (Map Tag Dynamic)
                   .unwrap $ get state :content
               [] (:effect log-plugin)
                 div
@@ -34,39 +34,39 @@
                       :placeholder |Content
                       :style $ .merge ui/expand ui/input
                       :on-input $ fn (e d!)
-                        hint-fn $ Fn (Map Tag Dynamic)
-                          Fn Dynamic & Dynamic $ -> Unit
+                        hint-fn $ Fn respo.schema/RespoEvent
+                          Fn AnyEnum $ -> Unit
                           -> Unit
                         let
-                            value $ .unwrap $ get e :value
+                            value $ :value e
                           when (string? value)
                             d! $ :: :states cursor $ assoc state :content value
                         , &unit
-                    =< 8 nil
+                    space-x 8
                     button $ {} (:style ui/button) (:inner-text |Run)
                       :on-click $ fn (e d!)
                         println $ .unwrap $ get state :content
-                    =< 24 nil
+                    space-x 24
                     <> $ str "|Counter: " $ :counter store
-                    =< 8 nil
+                    space-x 8
                     button $ {} (:style ui/button) (:inner-text "|Inc counter")
                       :on-click $ fn (e d!)
                         d! $ :: :inc nil
-                  =< nil 16
+                  space-y 16
                   memo-comp-by :a comp-demo
-                    decode-map-as (>> states :a) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (>> states :a) (Map Tag Dynamic)
                     , |A 10
                   memo-comp-by :a2 comp-demo
-                    decode-map-as (>> states :a2) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (>> states :a2) (Map Tag Dynamic)
                     , |A2 10
                   memo-comp-by :a3 comp-demo
-                    decode-map-as (>> states :a3) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (>> states :a3) (Map Tag Dynamic)
                     , |A3 10
                   memo-comp-by :a4 comp-demo
-                    decode-map-as (>> states :a4) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (>> states :a4) (Map Tag Dynamic)
                     , |A4 10
                   memo-comp-by :a5 comp-demo
-                    decode-map-as (>> states :a5) (:: 'Map 'Tag 'Dynamic)
+                    decode-map-as (>> states :a5) (Map Tag Dynamic)
                     , |A5 10
                   :ui log-plugin
           :examples $ []
@@ -76,14 +76,14 @@
             let
                 cursor $ decode-map-as
                   .unwrap $ get states :cursor
-                  :: 'List 'Dynamic
+                  List respo.schema/CoordKey
                 state $ decode-map-as
                   .unwrap-or (get states :data)
                     {} $ :draft |
-                  :: 'Map 'Tag 'String
+                  Map Tag String
                 log-plugin $ let
                     cached-plugin $ memo-value-by cursor use-log
-                      decode-map-as (>> states :demo) (:: 'Map 'Tag 'Dynamic)
+                      decode-map-as (>> states :demo) (Map Tag Dynamic)
                       , |DEMO
                   if (struct? cached-plugin)
                     struct-match cached-plugin (LogPlugin plugin plugin)
@@ -99,11 +99,11 @@
                     :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ Fn (Map Tag Dynamic)
-                        Fn Dynamic & Dynamic $ -> Unit
+                      hint-fn $ Fn respo.schema/RespoEvent
+                        Fn AnyEnum $ -> Unit
                         -> Unit
                       let
-                          value $ .unwrap $ get e :value
+                          value $ :value e
                         when (string? value)
                           d! $ :: :states cursor $ assoc state :draft value
                       , &unit
@@ -115,7 +115,7 @@
                     :inner-text $ trim $ format-cirru-edn state
                   ; if (> level 10)
                     comp-demo
-                      decode-map-as (>> states level) (:: 'Map 'Tag 'Dynamic)
+                      decode-map-as (>> states level) (Map Tag Dynamic)
                       str |M- level
                       dec level
                   :ui log-plugin
@@ -134,11 +134,11 @@
             let
                 cursor $ decode-map-as
                   .unwrap $ get states :cursor
-                  :: 'List 'Dynamic
+                  List respo.schema/CoordKey
                 state $ decode-map-as
                   .unwrap-or (get states :data)
                     {} $ :draft |
-                  :: 'Map 'Tag 'String
+                  Map Tag String
               LogPlugin :ui
                 div ({})
                   <> $ str "|LOG ::: " mark "| :: " $ .unwrap (get state :draft)
@@ -146,11 +146,11 @@
                     :value $ .unwrap $ get state :draft
                     :style ui/input
                     :on-input $ fn (e d!)
-                      hint-fn $ Fn (Map Tag Dynamic)
-                        Fn Dynamic & Dynamic $ -> Unit
+                      hint-fn $ Fn respo.schema/RespoEvent
+                        Fn AnyEnum $ -> Unit
                         -> Unit
                       let
-                          value $ .unwrap $ get e :value
+                          value $ :value e
                         when (string? value)
                           d! $ :: :states cursor $ assoc state :draft value
                       , &unit
@@ -169,7 +169,7 @@
         :code $ quote $ ns app.comp.container
           :require (respo-ui.core :as ui)
             respo.core :refer $ defcomp defeffect <> >> div button textarea span input pre memo-comp-by memo-value-by
-            respo.comp.space :refer $ =<
+            respo.comp.space :refer $ space-x space-y
             app.config :refer $ dev?
             respo.util.format :refer $ hsl
             app.schema :refer $ LogPlugin
@@ -198,7 +198,7 @@
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Unit)
+          :schema $ quote $ Fn AnyEnum (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
@@ -237,14 +237,18 @@
             app.config :as config
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'DispatchOp $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ def DispatchOp (:: :unhandled)
+          :examples $ []
+          :schema $ quote AnyEnum
         'LogPlugin $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct LogPlugin (:ui 'respo.schema/Element) (:effect 'respo.schema/Effect)
+          :code $ quote $ defstruct LogPlugin (:ui respo.schema/Element) (:effect respo.schema/Effect)
           :examples $ []
           :schema $ quote StructDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ quote $ Map Tag Dynamic
-            :counter 'Number
+            :states $ Map Tag Dynamic
+            :counter Number
           :examples $ []
           :schema $ quote StructDef
         'store $ %{} 'CodeEntry (:doc |)
@@ -265,15 +269,15 @@
                 (:states cursor data)
                   assoc store :states $ decode-map-as
                     update-state-tree (:states store)
-                      decode-map-as cursor $ :: 'List 'Dynamic
+                      decode-map-as cursor $ List respo.schema/CoordKey
                       , data
-                    :: 'Map 'Tag 'Dynamic
+                    Map Tag Dynamic
                 (:inc _)
                   assoc store :counter $ inc $ :counter store
                 _ store
               , store
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store Dynamic (-> app.schema/Store)
+          :schema $ quote $ Fn app.schema/Store AnyEnum (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require $ respo.cursor :refer $ update-state-tree

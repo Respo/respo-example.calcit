@@ -3,7 +3,7 @@ import test from 'node:test';
 import * as c from '../js-out/calcit.core.mjs';
 import { updater } from '../js-out/app.updater.mjs';
 import { store } from '../js-out/app.schema.mjs';
-import { Effect } from '../js-out/respo.schema.mjs';
+import { Effect, EffectParams } from '../js-out/respo.schema.mjs';
 import { comp_container } from '../js-out/app.comp.container.mjs';
 import { effect_log, use_log } from '../js-out/app.comp.container.mjs';
 import { event__GT_edn } from '../js-out/respo.util.format.mjs';
@@ -42,19 +42,19 @@ test('cursor dispatch updates the intended local state and preserves counter', (
   assert.equal(read(updated, tags.counter), 0);
 });
 
-test('input handler accepts the real Respo event Map and updates local state', () => {
+test('input handler accepts the real RespoEvent and updates local state', () => {
   const t = c.init_tags(['cursor', 'ui', 'children', 'node', 'event', 'input']);
   const plugin = use_log(c._$n__$M_(t.cursor, c._$L_()), 'demo');
   const inputPair = c.option_$o_unwrap(c.nth(read(read(plugin, t.ui), t.children), 1));
   const inputNode = c.option_$o_unwrap(read(inputPair, t.node));
   const input = c._$n_enum_$o_nth(inputNode, 1);
   const handler = read(read(input, t.event), t.input);
-  const event = event__GT_edn({ type: 'input', target: { value: '真实 Map 🐈', checked: false } });
-  assert.equal(c.map_$q_(event), true);
+  const event = event__GT_edn({ type: 'input', target: { value: '真实事件 🐈', checked: false } });
+  assert.equal(c.struct_$q_(event), true);
   let dispatched;
   handler(event, op => { dispatched = op; });
   const updated = updater(store, dispatched);
-  assert.equal(read(read(read(updated, tags.states), tags.data), tags.draft), '真实 Map 🐈');
+  assert.equal(read(read(read(updated, tags.states), tags.data), tags.draft), '真实事件 🐈');
   assert.equal(read(updated, tags.counter), 0);
 });
 
@@ -101,7 +101,7 @@ test('typed js-ffi mount lookup returns the host element and reports a missing m
 });
 
 test('effect logging crosses the typed console boundary', () => {
-  const tags = c.init_tags(['args', 'method', 'mount']);
+  const tags = c.init_tags(['args', 'method', 'mount', 'action', 'target', 'at-place?']);
   const effect = effect_log('demo');
   const logs = [];
   const original = console.log;
@@ -109,7 +109,7 @@ test('effect logging crosses the typed console boundary', () => {
   try {
     effect.nthAt(Effect.fields.indexOf(tags.method), tags.method)(
       effect.nthAt(Effect.fields.indexOf(tags.args), tags.args),
-      c._$L_(tags.mount, null, false),
+      c._$n__PCT__$M_(EffectParams, tags.action, tags.mount, tags.target, {}, tags['at-place?'], false),
     );
   } finally {
     console.log = original;

@@ -6,6 +6,8 @@ import { DispatchOp, store } from '../js-out/app.schema.mjs';
 import { Effect, EffectParams } from '../js-out/respo.schema.mjs';
 import { comp_container } from '../js-out/app.comp.container.mjs';
 import { effect_log, use_log } from '../js-out/app.comp.container.mjs';
+import { child_pair_value, component_tree, element_children, element_event, element_name, element_$q_ } from '../js-out/respo.util.detect.mjs';
+import { make_string } from '../js-out/respo.render.html.mjs';
 import { event__GT_edn } from '../js-out/respo.util.format.mjs';
 import { mount_target } from '../js-out/app.main.mjs';
 import { clear_cache_$x_ } from '../js-out/respo.core.mjs';
@@ -30,7 +32,15 @@ function renderInFrame(value) {
 }
 
 test('enum counter dispatch increments without mutating the original store', () => {
-  const updated = updater(store, increment());
+  const t = c.init_tags(['button', 'click']);
+  const root = c.option_$o_unwrap(component_tree(renderInFrame(store)));
+  const toolbar = child_pair_value(c.option_$o_unwrap(c.nth(element_children(root), 0)));
+  const button = element_children(toolbar).toArray().map(pair => child_pair_value(pair))
+    .find(node => element_$q_(node) && element_name(node) === t.button && make_string(node).includes('Inc counter'));
+  let operation;
+  read(element_event(button), t.click)(event__GT_edn({ type: 'click' }), value => { operation = value; });
+  assert.equal(c.option_$o_unwrap(c.enum_definition(operation)), DispatchOp);
+  const updated = updater(store, operation);
   assert.equal(read(updated, tags.counter), 1);
   assert.equal(read(store, tags.counter), 0);
   assert.equal(read(updated, tags.states), read(store, tags.states));
@@ -78,8 +88,11 @@ test('memo keys keep five demos distinct and reuse unchanged demos', () => {
   }
 });
 
-test('the named dispatch enum rejects unknown operations', () => {
+test('the named dispatch enum rejects unknown operations and malformed state payloads', () => {
   assert.throws(() => c._PCT__$o__$o_(DispatchOp, c.init_tags(['unknown']).unknown), /unknown/);
+  const data = c._$n__$M_(tags.draft, 'valid');
+  assert.throws(() => c._PCT__$o__$o_(DispatchOp, tags.states, 'not a cursor', data), /states/);
+  assert.throws(() => c._PCT__$o__$o_(DispatchOp, tags.states, c._$L_(tags.a), 'not a map'), /states/);
 });
 
 test('typed js-ffi mount lookup returns the host element and reports a missing mount', () => {

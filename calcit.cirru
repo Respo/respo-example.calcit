@@ -6,7 +6,7 @@
     {} (:description |Browser-example) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/ |js-ffi/
-      :type-slots $ {} $ :dispatch-op |app.schema/DispatchOp
+      :type-slots $ {} $ :dispatch-op 'app.schema/DispatchOp
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -35,12 +35,12 @@
                       :style $ .merge ui/expand ui/input
                       :on-input $ fn (e d!)
                         hint-fn $ Fn respo.schema/RespoEvent
-                          Fn AnyEnum $ -> Unit
+                          Fn app.schema/DispatchOp $ -> Unit
                           -> Unit
                         let
                             value $ :value e
                           when (string? value)
-                            d! $ :: :states cursor $ assoc state :content value
+                            d! $ app.schema/DispatchOp :states cursor $ assoc state :content value
                         , &unit
                     space-x 8
                     button $ {} (:style ui/button) (:inner-text |Run)
@@ -51,7 +51,7 @@
                     space-x 8
                     button $ {} (:style ui/button) (:inner-text "|Inc counter")
                       :on-click $ fn (e d!)
-                        d! $ :: :inc nil
+                        d! $ app.schema/DispatchOp :inc
                   space-y 16
                   memo-comp-by :a comp-demo
                     decode-map-as (>> states :a) (Map Tag Dynamic)
@@ -100,12 +100,12 @@
                     :style ui/input
                     :on-input $ fn (e d!)
                       hint-fn $ Fn respo.schema/RespoEvent
-                        Fn AnyEnum $ -> Unit
+                        Fn app.schema/DispatchOp $ -> Unit
                         -> Unit
                       let
                           value $ :value e
                         when (string? value)
-                          d! $ :: :states cursor $ assoc state :draft value
+                          d! $ app.schema/DispatchOp :states cursor $ assoc state :draft value
                       , &unit
                   <> $ str "|This is a demo: " mark
                   pre $ {}
@@ -147,12 +147,12 @@
                     :style ui/input
                     :on-input $ fn (e d!)
                       hint-fn $ Fn respo.schema/RespoEvent
-                        Fn AnyEnum $ -> Unit
+                        Fn app.schema/DispatchOp $ -> Unit
                         -> Unit
                       let
                           value $ :value e
                         when (string? value)
-                          d! $ :: :states cursor $ assoc state :draft value
+                          d! $ app.schema/DispatchOp :states cursor $ assoc state :draft value
                       , &unit
                 , :effect $ effect-log mark
           :examples $ []
@@ -198,7 +198,7 @@
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn AnyEnum (-> Unit)
+          :schema $ quote $ Fn app.schema/DispatchOp (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
@@ -238,9 +238,11 @@
     'app.schema $ %{} 'FileEntry
       :defs $ {}
         'DispatchOp $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def DispatchOp (:: :unhandled)
+          :code $ quote $ defenum DispatchOp
+            :states (List respo.schema/CoordKey) (Map Tag String)
+            :inc
           :examples $ []
-          :schema $ quote AnyEnum
+          :schema $ quote EnumDef
         'LogPlugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct LogPlugin (:ui respo.schema/Element) (:effect respo.schema/Effect)
           :examples $ []
@@ -264,20 +266,15 @@
       :defs $ {} $ 'updater
         %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op)
-            if (enum? op)
-              match op
-                (:states cursor data)
-                  assoc store :states $ decode-map-as
-                    update-state-tree (:states store)
-                      decode-map-as cursor $ List respo.schema/CoordKey
-                      , data
-                    Map Tag Dynamic
-                (:inc _)
-                  assoc store :counter $ inc $ :counter store
-                _ store
-              , store
+            match op
+              (:states cursor data)
+                assoc store :states $ decode-map-as
+                  update-state-tree (:states store) cursor data
+                  Map Tag Dynamic
+              (:inc)
+                assoc store :counter $ inc $ :counter store
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store AnyEnum (-> app.schema/Store)
+          :schema $ quote $ Fn app.schema/Store app.schema/DispatchOp (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require $ respo.cursor :refer $ update-state-tree

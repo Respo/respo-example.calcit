@@ -51,6 +51,13 @@ test('cursor dispatch updates the intended local state and preserves counter', (
   const state = read(read(read(updated, tags.states), tags.a), tags.data);
   assert.equal(read(state, tags.draft), 'hello');
   assert.equal(read(updated, tags.counter), 0);
+  const editAt = (key, draft) => c._PCT__$o__$o_(
+    DispatchOp, tags.states, c._$L_(tags.a, key), c._$n__$M_(tags.draft, draft),
+  );
+  const withMixedKeys = updater(updater(updated, editAt(1, 'number')), editAt('1', 'text'));
+  const branch = read(read(withMixedKeys, tags.states), tags.a);
+  assert.equal(read(read(read(branch, 1), tags.data), tags.draft), 'number');
+  assert.equal(read(read(read(branch, '1'), tags.data), tags.draft), 'text');
 });
 
 test('input handler accepts the real RespoEvent and updates local state', () => {

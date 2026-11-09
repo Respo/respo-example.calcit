@@ -22,7 +22,7 @@
                     {} $ :content |
                   Map Tag String
                 log-plugin $ use-log
-                  decode-map-as (>> states :cont) (Map Tag Dynamic)
+                  decode-map-as (>> states :cont) (Map respo.schema/CoordKey app.schema/StateValue)
                   .unwrap $ get state :content
               [] (:effect log-plugin)
                 div
@@ -54,19 +54,19 @@
                         d! $ app.schema/DispatchOp :inc
                   space-y 16
                   memo-comp-by :a comp-demo
-                    decode-map-as (>> states :a) (Map Tag Dynamic)
+                    decode-map-as (>> states :a) (Map respo.schema/CoordKey app.schema/StateValue)
                     , |A 10
                   memo-comp-by :a2 comp-demo
-                    decode-map-as (>> states :a2) (Map Tag Dynamic)
+                    decode-map-as (>> states :a2) (Map respo.schema/CoordKey app.schema/StateValue)
                     , |A2 10
                   memo-comp-by :a3 comp-demo
-                    decode-map-as (>> states :a3) (Map Tag Dynamic)
+                    decode-map-as (>> states :a3) (Map respo.schema/CoordKey app.schema/StateValue)
                     , |A3 10
                   memo-comp-by :a4 comp-demo
-                    decode-map-as (>> states :a4) (Map Tag Dynamic)
+                    decode-map-as (>> states :a4) (Map respo.schema/CoordKey app.schema/StateValue)
                     , |A4 10
                   memo-comp-by :a5 comp-demo
-                    decode-map-as (>> states :a5) (Map Tag Dynamic)
+                    decode-map-as (>> states :a5) (Map respo.schema/CoordKey app.schema/StateValue)
                     , |A5 10
                   :ui log-plugin
           :examples $ []
@@ -83,7 +83,7 @@
                   Map Tag String
                 log-plugin $ let
                     cached-plugin $ memo-value-by cursor use-log
-                      decode-map-as (>> states :demo) (Map Tag Dynamic)
+                      decode-map-as (>> states :demo) (Map respo.schema/CoordKey app.schema/StateValue)
                       , |DEMO
                   if (struct? cached-plugin)
                     struct-match cached-plugin (LogPlugin plugin plugin)
@@ -115,12 +115,12 @@
                     :inner-text $ trim $ format-cirru-edn state
                   ; if (> level 10)
                     comp-demo
-                      decode-map-as (>> states level) (Map Tag Dynamic)
+                      decode-map-as (>> states level) (Map respo.schema/CoordKey app.schema/StateValue)
                       str |M- level
                       dec level
                   :ui log-plugin
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) String Number (-> respo.schema/Component)
+          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String Number (-> respo.schema/Component)
         'effect-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defeffect effect-log (mark) (action el at?)
             js-ffi.browser/console-log! $ str-spaced "|Effect happen:" mark action
@@ -156,7 +156,7 @@
                       , &unit
                 , :effect $ effect-log mark
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) String (-> app.schema/LogPlugin)
+          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String (-> app.schema/LogPlugin)
         'use-plugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-plugin (mark)
             div
@@ -247,9 +247,14 @@
           :code $ quote $ defstruct LogPlugin (:ui respo.schema/Element) (:effect respo.schema/Effect)
           :examples $ []
           :schema $ quote StructDef
+        'StateValue $ %{} 'CodeEntry
+          :doc "|Text fields, cursor paths, and nested branches in the example state tree."
+          :code $ quote $ defunion StateValue String (List respo.schema/CoordKey) (Map respo.schema/CoordKey app.schema/StateValue)
+          :examples $ []
+          :schema $ quote UnionDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ Map Tag Dynamic
+            :states $ Map respo.schema/CoordKey app.schema/StateValue
             :counter Number
           :examples $ []
           :schema $ quote StructDef
@@ -270,7 +275,7 @@
               (:states cursor data)
                 assoc store :states $ decode-map-as
                   update-state-tree (:states store) cursor data
-                  Map Tag Dynamic
+                  Map respo.schema/CoordKey app.schema/StateValue
               (:inc)
                 assoc store :counter $ inc $ :counter store
           :examples $ []

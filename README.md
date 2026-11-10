@@ -6,7 +6,7 @@ Respo Calcit Example
 
 CLI 与 `@calcit/procs` 配对正式 **0.40.0**。升级后重新安装依赖并构建前端。模块使用已发布的 Respo **0.19.5**、UI **0.15.2** 和 JS FFI **0.2.13**，传递依赖 Router 为 **0.12.2**。
 
-输入、计数器、五个独立 memo 实例及 effect 保持原用法。输入事件按 `RespoEvent` 读取，状态路径使用 `CoordKey`，dispatch 使用具名 `DispatchOp`。 状态树使用递归 `StateValue` union，允许文本、游标和子分支，并保留数字与文本键的身份。原完整 strict、质量基线、定义测试与七项 Node 测试继续运行。
+输入、计数器、五个独立 memo 实例及 effect 保持原用法。输入事件按 `RespoEvent` 读取，状态路径使用 `CoordKey`，dispatch 使用具名 `DispatchOp`。 状态树使用递归 `StateValue` union，允许文本、游标和子分支，并保留数字与文本键的身份。完整 strict、零债务质量基线、定义测试与七项 Node 测试继续运行。
 
 ### 开发
 
@@ -56,14 +56,13 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 每个 PR 独立排队，与生产队列分开，不取消正在上传的任务。
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
-模块固定已发布 tag，工具链使用正式 0.32.1，不使用 hash/main 模块引用。
-原质量基线保持：schemaDynamic 4、unresolved 9，unsafe/deprecated 为 0，不放宽任何定义。
-原有五处排版占位 nil 与真实异构状态边界保留，不把它们伪装成具体类型。
+模块固定已发布 tag，工具链使用正式 0.40.0，不使用 hash/main 模块引用。
+质量基线的动态类型、未解析类型槽、nil、unsafe 和废弃调用上限均为 0。
 本 PR 不授权合并或生产部署。
 
 `yarn dev` 先编译一次再启动Vite，实时源码编译仍另开原watch命令，不引入concurrently。
 
-原排版占位nil与异构状态保留，不伪装为具体类型。既往实际页面验收不代表HMR、
+既往实际页面验收不代表HMR、
 全部effect卸载路径或移动端已验证；本次以精确PR提交的CI和原测试结果为准。
 
 ### 许可证

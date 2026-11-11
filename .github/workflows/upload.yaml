@@ -50,9 +50,7 @@ jobs:
         calcit calcit.cirru fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
         calcit calcit.cirru --check-only --all-defs
         calcit calcit.cirru test --require-match --summary-only --format json
-        calcit calcit.cirru analyze weak-types --only deprecated-call --summary-only --format json
-        calcit calcit.cirru analyze weak-types --only dynamic-method --summary-only --format json
-        calcit calcit.cirru analyze quality --baseline config/calcit-quality.cirru
+        bash scripts/check-types.sh
 
     - name: Build client with CDN asset URLs
       id: asset-path

@@ -156,7 +156,7 @@
                       , &unit
                 , :effect $ effect-log mark
           :examples $ []
-          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String (-> app.schema/LogPlugin)
+          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String (-> LogPlugin)
         'use-plugin $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn use-plugin (mark)
             div
@@ -191,14 +191,14 @@
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *store schema/store
           :examples $ []
-          :schema $ quote $ Ref app.schema/Store
+          :schema $ quote $ Ref schema/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn app.schema/DispatchOp (-> Unit)
+          :schema $ quote $ Fn schema/DispatchOp (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
@@ -264,7 +264,7 @@
               {} $ :cursor $ []
               , :counter 0
           :examples $ []
-          :schema $ quote app.schema/Store
+          :schema $ quote Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry

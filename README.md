@@ -4,13 +4,13 @@ Respo Calcit Example
 
 ### 使用者影响
 
-CLI 与 `@calcit/procs` 配对正式 **0.41.1**。升级后重新安装依赖并构建前端。模块使用已发布的 Respo **0.19.5**、UI **0.15.2** 和 JS FFI **0.2.13**，传递依赖 Router 为 **0.12.2**。
+CLI 与 `@calcit/procs` 配对正式 **0.42.1**。升级后重新安装依赖并构建前端。模块使用已发布的 Respo **0.19.5**、UI **0.15.2** 和 JS FFI **0.2.13**，传递依赖 Router 为 **0.12.2**。
 
 输入、计数器、五个独立 memo 实例及 effect 保持原用法。输入事件按 `RespoEvent` 读取，状态路径使用 `CoordKey`，dispatch 使用具名 `DispatchOp`。 状态树使用递归 `StateValue` union，允许文本、游标和子分支，并保留数字与文本键的身份。完整 strict、零债务质量基线、定义测试与七项 Node 测试继续运行。
 
 ### 开发
 
-当前使用配对的正式Calcit/procs0.41.1、caps0.1.1、Node24和Yarn4.18.0。
+当前使用配对的正式Calcit/procs0.42.1、caps0.1.1、Node24和Yarn4.18.0。
 正式CLI/运行验收以当前源码和精确提交为准，旧alpha或旧绿色检查不代替本轮迁移验证。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
@@ -56,7 +56,7 @@ PR 前缀按 `Respo/respo-example.calcit/pr/<PR>/<run-id>/<attempt>/` 隔离；
 每个 PR 独立排队，与生产队列分开，不取消正在上传的任务。
 生产 COS 前缀与原服务器 `dist/*` 部署路径不变，Fork PR 仅构建，
 不使用部署 secrets。现有类型、质量与业务测试门禁保留；
-模块固定已发布 tag，工具链使用正式 0.41.1，不使用 hash/main 模块引用。
+模块固定已发布 tag，工具链使用正式 0.42.1，不使用 hash/main 模块引用。
 质量基线的动态类型、未解析类型槽、nil、unsafe 和废弃调用上限均为 0。
 本 PR 不授权合并或生产部署。
 

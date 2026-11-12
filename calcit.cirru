@@ -70,7 +70,7 @@
                     , |A5 10
                   :ui log-plugin
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component)
+          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :io)
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-demo (states mark level)
             let
@@ -120,7 +120,7 @@
                       dec level
                   :ui log-plugin
           :examples $ []
-          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String Number (-> respo.schema/Component)
+          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String Number (-> respo.schema/Component) (:features :io)
         'effect-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defeffect effect-log (mark) (action el at?)
             js-ffi.browser/console-log! $ str-spaced "|Effect happen:" mark action
@@ -198,7 +198,7 @@
             reset! *store $ updater @*store op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn schema/DispatchOp (-> Unit)
+          :schema $ quote $ Fn schema/DispatchOp (-> Unit) (:features :io :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!)
             println "|Running mode:" $ if config/dev? |dev |release
@@ -206,7 +206,7 @@
             add-watch! *store :changes $ fn (store prev) (render-app!)
             println "|App started."
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn mount-target ()
             match (js-ffi.browser/query-selector |.app)
@@ -219,14 +219,14 @@
             add-watch! *store :changes $ fn (store prev) (render-app!)
             render-app!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
             render-with! (mount-target)
               fn () $ dbg $ comp-container @*store
               , dispatch!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require

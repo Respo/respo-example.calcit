@@ -70,7 +70,7 @@
                     , |A5 10
                   :ui log-plugin
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :io)
+          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :io :state)
         'comp-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-demo (states mark level)
             let
@@ -120,7 +120,7 @@
                       dec level
                   :ui log-plugin
           :examples $ []
-          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String Number (-> respo.schema/Component) (:features :io)
+          :schema $ quote $ Fn (Map respo.schema/CoordKey app.schema/StateValue) String Number (-> respo.schema/Component) (:features :io :state)
         'effect-log $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defeffect effect-log (mark) (action el at?)
             js-ffi.browser/console-log! $ str-spaced "|Effect happen:" mark action

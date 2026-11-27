@@ -4,13 +4,13 @@ Respo Calcit Example
 
 ### 使用者影响
 
-CLI 与 `@calcit/procs` 配对正式 **0.45.1**。升级后重新安装依赖并构建前端。模块使用已发布的 Respo **0.19.18**、UI **0.16.5** 和 JS FFI **0.2.24**，传递依赖 Router 为 **0.12.17**。
+CLI 与 `@calcit/procs` 配对正式 **0.46.0**。升级后重新安装依赖并构建前端。模块使用已发布的 Respo **0.20.0**、UI **0.16.6** 和 JS FFI **0.2.26**，传递依赖 Router 为 **0.12.18**。
 
 输入、计数器、五个独立 memo 实例及 effect 保持原用法。输入事件按 `RespoEvent` 读取，状态路径使用 `CoordKey`，dispatch 使用具名 `DispatchOp`。 状态树使用递归 `StateValue` union，允许文本、游标和子分支，并保留数字与文本键的身份。完整 strict、零债务质量基线、定义测试与七项 Node 测试继续运行。
 
 ### 开发
 
-当前使用配对的正式Calcit/procs0.45.1、caps0.1.1、Node24和Yarn4.18.0。
+当前使用配对的正式Calcit/procs 0.46.0、Caps 0.1.1、Node 24 和 Yarn 4.18.0。
 正式CLI/运行验收以当前源码和精确提交为准，旧alpha或旧绿色检查不代替本轮迁移验证。
 `calcit.cirru` 是唯一的程序 Snapshot。安装与启动：
 
